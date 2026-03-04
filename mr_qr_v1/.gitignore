@@ -1,0 +1,15 @@
+data/*.db
+data/*.db-wal
+data/*.db-shm
+uploads/*
+!uploads/.gitkeep
+generated/*
+!generated/.gitkeep
+.env
+.env.local
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+/vendor/

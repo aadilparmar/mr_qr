@@ -1,0 +1,14 @@
+{
+    "name": "qrcode-pro/app",
+    "description": "Professional QR Code Generator with 24+ types, bulk generation, and full customization",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.0",
+        "ext-pdo": "*",
+        "ext-sqlite3": "*"
+    },
+    "scripts": {
+        "serve": "php -S localhost:8000 -t ."
+    }
+}

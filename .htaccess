@@ -1,0 +1,44 @@
+RewriteEngine On
+RewriteBase /mr_qr_v1/
+
+# Redirect to HTTPS (uncomment in production)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# If file or directory exists, serve directly
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# ─── CLEAN URL ROUTES ───
+
+# Auth routes
+RewriteRule ^login/?$          auth/login.php [L]
+RewriteRule ^register/?$       auth/register.php [L]
+RewriteRule ^logout/?$         auth/logout.php [L]
+RewriteRule ^profile/?$        auth/profile.php [L]
+
+# Main app routes
+RewriteRule ^dashboard/?$      dashboard.php [L]
+RewriteRule ^generate/?$       generate.php [L]
+RewriteRule ^history/?$        history.php [L]
+RewriteRule ^bulk/?$           bulk.php [L]
+
+# API routes
+RewriteRule ^api/generate/?$   api/generate.php [L]
+
+# Remove .php extension (redirect old URLs to clean)
+RewriteCond %{THE_REQUEST} /mr_qr_v1/([^.]+)\.php[\s?] [NC]
+RewriteRule ^ /mr_qr_v1/%1 [R=301,L]
+
+# Block access to sensitive files
+RewriteRule ^config/ - [F,L]
+RewriteRule ^data/ - [F,L]
+RewriteRule ^includes/ - [F,L]
+
+# Deny access to .env and hidden files
+RewriteRule (^\.|/\.) - [F]
+
+# PHP error display (remove in production)
+php_flag display_errors Off
+php_value error_reporting 0
