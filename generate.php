@@ -82,6 +82,46 @@ textarea.input-field{resize:vertical}
 .slider-row input[type=range]{flex:1;accent-color:var(--orange)}
 .slider-val{font-size:11px;font-weight:700;color:var(--orange);min-width:32px;text-align:right}
 .cust-card+.cust-card{margin-top:3px}
+
+/* ═══ Custom Select Dropdown ═══ */
+.cs-wrap{position:relative}
+.cs-trigger{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text);transition:all .15s;user-select:none}
+.cs-trigger:hover{border-color:var(--orange)}
+.cs-trigger.open{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,92,53,.1);border-radius:10px 10px 0 0}
+.cs-trigger .cs-arrow{transition:transform .2s;color:var(--text3)}
+.cs-trigger.open .cs-arrow{transform:rotate(180deg);color:var(--orange)}
+.cs-trigger .cs-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-right:6px}
+.cs-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--bg);border:1.5px solid var(--orange);border-top:none;border-radius:0 0 10px 10px;box-shadow:0 12px 32px rgba(0,0,0,.12);z-index:60;max-height:220px;overflow-y:auto;padding:4px;display:none;scrollbar-width:thin}
+.cs-dropdown.show{display:block;animation:scaleIn .15s ease}
+.cs-dropdown::-webkit-scrollbar{width:4px}
+.cs-dropdown::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.cs-option{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:all .1s;color:var(--text2)}
+.cs-option:hover{background:var(--orange-light);color:var(--orange)}
+.cs-option.selected{background:var(--orange);color:#fff;font-weight:600}
+.cs-option .cs-check{margin-left:auto;opacity:0}
+.cs-option.selected .cs-check{opacity:1}
+
+/* ═══ Custom Color Picker ═══ */
+.cp-wrap{position:relative}
+.cp-trigger{display:flex;align-items:center;gap:10px;padding:7px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;width:100%}
+.cp-trigger:hover{border-color:var(--orange)}
+.cp-swatch{width:26px;height:26px;border-radius:7px;border:1.5px solid rgba(0,0,0,.08);flex-shrink:0;transition:transform .15s}
+.cp-trigger:hover .cp-swatch{transform:scale(1.1)}
+.cp-hex{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--text);flex:1}
+.cp-label{font-size:10px;color:var(--text3);font-weight:500}
+.cp-panel{position:absolute;top:calc(100% + 6px);left:0;width:260px;background:var(--bg);border:1.5px solid var(--border);border-radius:14px;box-shadow:0 15px 50px rgba(0,0,0,.18);z-index:70;padding:14px;display:none}
+.cp-panel.show{display:block;animation:scaleIn .15s ease}
+.cp-panel-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.cp-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;margin-bottom:12px}
+.cp-color{width:100%;aspect-ratio:1;border-radius:5px;cursor:pointer;border:2px solid transparent;transition:all .12s}
+.cp-color:hover{transform:scale(1.2);z-index:1;border-color:var(--text2)}
+.cp-color.active{border-color:var(--orange);box-shadow:0 0 0 2px var(--orange)}
+.cp-input-row{display:flex;gap:6px;align-items:center}
+.cp-native{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;padding:1px;flex-shrink:0}
+.cp-hex-input{flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text);background:var(--bg)}
+.cp-hex-input:focus{border-color:var(--orange);outline:none;box-shadow:0 0 0 3px rgba(255,92,53,.1)}
+html.dark .cp-panel{box-shadow:0 15px 50px rgba(0,0,0,.4)}
+html.dark .cs-dropdown{box-shadow:0 12px 32px rgba(0,0,0,.3)}
 </style>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-5 py-8 lg:py-10">
@@ -230,7 +270,7 @@ textarea.input-field{resize:vertical}
                     </span>
                     <i data-lucide="chevron-down" class="chev open w-4 h-4 text-neutral-400"></i>
                 </div>
-                <div class="cust-body" style="max-height:600px">
+                <div class="cust-body" style="max-height:3000px;overflow:visible">
                     <div class="cust-body-inner pt-4 space-y-3">
                         <div class="color-presets">
                             <div class="color-preset active-preset" data-tooltip="Classic" data-fg="#000000" data-bg="#FFFFFF" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#000000 50%,#FFFFFF 50%);border-color:var(--orange)"></div>
@@ -1295,11 +1335,17 @@ function toggleCust(head) {
     const body = head.nextElementSibling;
     const chev = head.querySelector('.chev');
     const isOpen = body.style.maxHeight !== '0px' && body.style.maxHeight !== '' && body.style.maxHeight !== '0';
-    body.style.maxHeight = isOpen ? '0px' : body.scrollHeight + 'px';
-    chev.classList.toggle('open', !isOpen);
-    if (!isOpen) {
-        setTimeout(() => { body.style.maxHeight = body.scrollHeight + 80 + 'px'; }, 380);
+    if (isOpen) {
+        body.style.maxHeight = body.scrollHeight + 'px';
+        body.offsetHeight;
+        body.style.maxHeight = '0px';
+        body.style.overflow = 'hidden';
+    } else {
+        body.style.overflow = 'hidden';
+        body.style.maxHeight = body.scrollHeight + 100 + 'px';
+        setTimeout(() => { body.style.maxHeight = '3000px'; body.style.overflow = 'visible'; }, 380);
     }
+    chev.classList.toggle('open', !isOpen);
 }
 
 /* ── Toggle switch (custom checkbox) ──────────────────────────────── */
@@ -1335,6 +1381,128 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// AUTO-UPGRADE: Custom Select Dropdowns
+// ═══════════════════════════════════════════════════════════════════════════
+document.querySelectorAll('select.input-field').forEach(sel => {
+    const wrap = document.createElement('div');
+    wrap.className = 'cs-wrap';
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.appendChild(sel);
+    sel.style.display = 'none';
+
+    const trigger = document.createElement('div');
+    trigger.className = 'cs-trigger';
+    const selectedOpt = sel.options[sel.selectedIndex];
+    trigger.innerHTML = '<span class="cs-text">' + (selectedOpt ? selectedOpt.text : '') + '</span><svg class="cs-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+    wrap.insertBefore(trigger, sel);
+
+    const dropdown = document.createElement('div');
+    dropdown.className = 'cs-dropdown';
+    Array.from(sel.options).forEach(opt => {
+        const div = document.createElement('div');
+        div.className = 'cs-option' + (opt.selected ? ' selected' : '');
+        div.dataset.value = opt.value;
+        div.innerHTML = opt.text + '<svg class="cs-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+        div.addEventListener('click', () => {
+            sel.value = opt.value;
+            trigger.querySelector('.cs-text').textContent = opt.text;
+            dropdown.querySelectorAll('.cs-option').forEach(o => o.classList.remove('selected'));
+            div.classList.add('selected');
+            dropdown.classList.remove('show');
+            trigger.classList.remove('open');
+            sel.dispatchEvent(new Event('change'));
+        });
+        dropdown.appendChild(div);
+    });
+    wrap.appendChild(dropdown);
+
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = dropdown.classList.contains('show');
+        document.querySelectorAll('.cs-dropdown.show').forEach(d => { d.classList.remove('show'); d.parentElement.querySelector('.cs-trigger')?.classList.remove('open'); });
+        document.querySelectorAll('.cp-panel.show').forEach(p => p.classList.remove('show'));
+        if (!isOpen) { dropdown.classList.add('show'); trigger.classList.add('open'); }
+    });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// AUTO-UPGRADE: Custom Color Pickers
+// ═══════════════════════════════════════════════════════════════════════════
+const CP_SWATCHES = [
+    '#000000','#1E293B','#334155','#475569','#64748B','#94A3B8','#CBD5E1','#FFFFFF',
+    '#EF4444','#F97316','#F59E0B','#EAB308','#84CC16','#22C55E','#10B981','#14B8A6',
+    '#06B6D4','#0EA5E9','#3B82F6','#6366F1','#8B5CF6','#A855F7','#D946EF','#EC4899',
+    '#B91C1C','#C2410C','#B45309','#A16207','#4D7C0F','#15803D','#0F766E','#0E7490',
+    '#1D4ED8','#4338CA','#6D28D9','#7E22CE','#A21CAF','#BE185D','#9F1239','#713F12',
+];
+
+document.querySelectorAll('input[type=color]').forEach(inp => {
+    const wrap = document.createElement('div');
+    wrap.className = 'cp-wrap';
+    inp.parentNode.insertBefore(wrap, inp);
+    wrap.appendChild(inp);
+    inp.style.display = 'none';
+
+    // Also hide any adjacent hex text input
+    const hexInput = inp.nextElementSibling;
+    const hasHex = hexInput && hexInput.type === 'text' && hexInput.maxLength === 7;
+    if (hasHex) { wrap.appendChild(hexInput); hexInput.style.display = 'none'; }
+
+    const trigger = document.createElement('div');
+    trigger.className = 'cp-trigger';
+    trigger.innerHTML = '<div class="cp-swatch" style="background:' + inp.value + '"></div><span class="cp-hex">' + inp.value.toUpperCase() + '</span><span class="cp-label">click</span>';
+    wrap.insertBefore(trigger, inp);
+
+    const panel = document.createElement('div');
+    panel.className = 'cp-panel';
+    let html = '<div class="cp-panel-title">Pick a Color</div><div class="cp-grid">';
+    CP_SWATCHES.forEach(c => {
+        html += '<div class="cp-color' + (c.toUpperCase() === inp.value.toUpperCase() ? ' active' : '') + '" style="background:' + c + '" data-color="' + c + '"></div>';
+    });
+    html += '</div><div class="cp-input-row"><input type="color" class="cp-native" value="' + inp.value + '"><input type="text" class="cp-hex-input" value="' + inp.value + '" maxlength="7" placeholder="#000000"></div>';
+    panel.innerHTML = html;
+    wrap.appendChild(panel);
+
+    function setColor(color) {
+        inp.value = color;
+        if (hasHex) hexInput.value = color;
+        trigger.querySelector('.cp-swatch').style.background = color;
+        trigger.querySelector('.cp-hex').textContent = color.toUpperCase();
+        panel.querySelector('.cp-native').value = color;
+        panel.querySelector('.cp-hex-input').value = color;
+        panel.querySelectorAll('.cp-color').forEach(s => s.classList.toggle('active', s.dataset.color.toUpperCase() === color.toUpperCase()));
+        inp.dispatchEvent(new Event('change'));
+    }
+
+    panel.querySelectorAll('.cp-color').forEach(swatch => {
+        swatch.addEventListener('click', () => setColor(swatch.dataset.color));
+    });
+
+    panel.querySelector('.cp-native').addEventListener('input', function() { setColor(this.value); });
+    panel.querySelector('.cp-hex-input').addEventListener('change', function() {
+        const v = this.value.trim();
+        if (/^#[0-9a-fA-F]{6}$/.test(v)) setColor(v);
+    });
+
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = panel.classList.contains('show');
+        document.querySelectorAll('.cp-panel.show').forEach(p => p.classList.remove('show'));
+        document.querySelectorAll('.cs-dropdown.show').forEach(d => { d.classList.remove('show'); d.parentElement.querySelector('.cs-trigger')?.classList.remove('open'); });
+        if (!isOpen) panel.classList.add('show');
+    });
+});
+
+// Close all custom dropdowns/pickers when clicking outside
+document.addEventListener('click', () => {
+    document.querySelectorAll('.cs-dropdown.show').forEach(d => { d.classList.remove('show'); d.parentElement.querySelector('.cs-trigger')?.classList.remove('open'); });
+    document.querySelectorAll('.cp-panel.show').forEach(p => p.classList.remove('show'));
+});
+// Prevent panel clicks from closing
+document.querySelectorAll('.cp-panel, .cs-dropdown').forEach(el => el.addEventListener('click', e => e.stopPropagation()));
 });
 </script>
 
