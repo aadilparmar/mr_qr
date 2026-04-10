@@ -6,6 +6,7 @@ require_once __DIR__ . '/includes/functions.php';
 
 requireLogin();
 
+$currentUser  = getCurrentUser();
 $types        = getQRTypes();
 $selectedType = $_GET['type'] ?? 'url';
 if (!isset($types[$selectedType]) || $selectedType === 'bulk') $selectedType = 'url';
@@ -60,6 +61,14 @@ select.input-field{-webkit-appearance:none;background-image:url("data:image/svg+
 textarea.input-field{resize:vertical}
 .chev{transition:transform .3s}
 .chev.open{transform:rotate(180deg)}
+.color-presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.color-preset{width:32px;height:32px;border-radius:50%;cursor:pointer;border:2.5px solid var(--border);transition:all .17s;position:relative;overflow:hidden}
+.color-preset:hover{transform:scale(1.15);box-shadow:0 3px 12px rgba(0,0,0,.15)}
+.color-preset.active-preset{border-color:var(--orange);box-shadow:0 0 0 2px var(--orange)}
+.color-preset::before{content:'';position:absolute;top:0;left:0;width:50%;height:100%}
+.color-preset::after{content:'';position:absolute;top:0;right:0;width:50%;height:100%}
+.color-preset[data-tooltip]{position:relative}
+.color-preset[data-tooltip]:hover::after{content:attr(data-tooltip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;white-space:nowrap;z-index:10;width:auto;height:auto;right:auto;top:auto}
 </style>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-5 py-8 lg:py-10">
@@ -75,7 +84,7 @@ textarea.input-field{resize:vertical}
         <?php foreach ($types as $key => $type): if ($key === 'bulk') continue; ?>
         <a href="<?= url('/generate?type=' . $key) ?>"
            class="type-pill <?= $key === $selectedType ? 'active' : '' ?>">
-            <i data-lucide="<?= $type['icon'] ?>" style="width:12px;height:12px"></i>
+            <i data-lucide="<?= $type['icon'] ?>" style="width:18px;height:18px"></i>
             <span><?= $type['name'] ?></span>
         </a>
         <?php endforeach; ?>
@@ -88,9 +97,8 @@ textarea.input-field{resize:vertical}
 
             <div class="card p-6" style="border-radius:20px">
                 <div class="flex items-center gap-3 mb-6">
-                    <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                         style="background:<?= $types[$selectedType]['color'] ?>18;border:1px solid <?= $types[$selectedType]['color'] ?>28">
-                        <i data-lucide="<?= $types[$selectedType]['icon'] ?>" class="w-5 h-5" style="color:<?= $types[$selectedType]['color'] ?>"></i>
+                    <div class="w-13 h-13 rounded-xl flex items-center justify-center flex-shrink-0" style="width:52px;height:52px;background:<?= $types[$selectedType]['color'] ?>15;border:1.5px solid <?= $types[$selectedType]['color'] ?>25">
+                        <i data-lucide="<?= $types[$selectedType]['icon'] ?>" class="w-7 h-7" style="color:<?= $types[$selectedType]['color'] ?>"></i>
                     </div>
                     <div>
                         <h2 class="font-display font-bold text-lg text-neutral-900 leading-tight"><?= $types[$selectedType]['name'] ?> QR Code</h2>
@@ -207,9 +215,22 @@ textarea.input-field{resize:vertical}
                 </div>
                 <div class="cust-body" style="max-height:0">
                     <div class="cust-body-inner pt-5 space-y-4">
+                        <!-- Color Presets -->
+                        <div>
+                            <label class="label">Color Presets</label>
+                            <div class="color-presets">
+                                <div class="color-preset active-preset" data-tooltip="Classic" data-fg="#000000" data-bg="#FFFFFF" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#000000 50%,#FFFFFF 50%);border-color:var(--orange)"></div>
+                                <div class="color-preset" data-tooltip="Ocean" data-fg="#1B3A5C" data-bg="#E8F4FD" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#1B3A5C 50%,#E8F4FD 50%)"></div>
+                                <div class="color-preset" data-tooltip="Forest" data-fg="#1A5D1A" data-bg="#E8F5E9" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#1A5D1A 50%,#E8F5E9 50%)"></div>
+                                <div class="color-preset" data-tooltip="Royal" data-fg="#4F46E5" data-bg="#EEF2FF" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#4F46E5 50%,#EEF2FF 50%)"></div>
+                                <div class="color-preset" data-tooltip="Sunset" data-fg="#B91C1C" data-bg="#FFF7ED" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#B91C1C 50%,#FFF7ED 50%)"></div>
+                                <div class="color-preset" data-tooltip="Midnight" data-fg="#FFFFFF" data-bg="#1E293B" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#FFFFFF 50%,#1E293B 50%)"></div>
+                            </div>
+                        </div>
+                        <!-- 1. Dot Color -->
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="label">Foreground</label>
+                                <label class="label">Dot Color</label>
                                 <div class="flex gap-2 items-center">
                                     <input type="color" id="qr-fg-color" value="#000000" onchange="updateQR()" class="w-10 h-10 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
                                     <input type="text" id="qr-fg-hex" value="#000000" maxlength="7" class="input-field" style="padding:8px 12px" onchange="document.getElementById('qr-fg-color').value=this.value;updateQR()">
@@ -223,13 +244,93 @@ textarea.input-field{resize:vertical}
                                 </div>
                             </div>
                         </div>
+                        <!-- 2. Dot Style -->
+                        <div>
+                            <label class="label">Dot Style</label>
+                            <select id="qr-dot-type" class="input-field" onchange="updateQR()">
+                                <option value="square">Square</option>
+                                <option value="dots">Dots</option>
+                                <option value="rounded" selected>Rounded</option>
+                                <option value="extra-rounded">Extra Rounded</option>
+                                <option value="classy">Classy</option>
+                                <option value="classy-rounded">Classy Rounded</option>
+                            </select>
+                        </div>
+                        <!-- 3. Eye / Corner Shape -->
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="label">Size (px)</label>
+                                <label class="label">Corner Frame</label>
+                                <select id="qr-corner-square" class="input-field" onchange="updateQR()">
+                                    <option value="">Default</option>
+                                    <option value="dot">Dot</option>
+                                    <option value="square">Square</option>
+                                    <option value="extra-rounded" selected>Rounded</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="label">Corner Dot</label>
+                                <select id="qr-corner-dot" class="input-field" onchange="updateQR()">
+                                    <option value="">Default</option>
+                                    <option value="dot" selected>Dot</option>
+                                    <option value="square">Square</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- 4. Eye Color Override -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="label">Corner Frame Color</label>
+                                <div class="flex gap-2 items-center">
+                                    <input type="color" id="qr-corner-sq-color" value="#000000" onchange="updateQR()" class="w-10 h-10 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                                    <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="qr-corner-sq-custom" onchange="updateQR()"><span class="text-xs text-neutral-500 font-medium">Custom</span></label>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="label">Corner Dot Color</label>
+                                <div class="flex gap-2 items-center">
+                                    <input type="color" id="qr-corner-dot-color" value="#000000" onchange="updateQR()" class="w-10 h-10 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                                    <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="qr-corner-dot-custom" onchange="updateQR()"><span class="text-xs text-neutral-500 font-medium">Custom</span></label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 5. Logo / Watermark -->
+                        <div>
+                            <label class="label">Logo / Watermark</label>
+                            <div class="flex gap-2 items-center">
+                                <input type="file" id="qr-logo-file" accept="image/*" onchange="handleLogo(this)" class="input-field" style="padding:8px 12px;font-size:12px">
+                                <button type="button" onclick="clearLogo()" class="btn btn-sm btn-s" style="flex-shrink:0;padding:8px 12px">
+                                    <i data-lucide="x" style="width:12px;height:12px"></i>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 mt-3">
+                                <div>
+                                    <label class="label">Logo Size: <span id="logo-size-val">30</span>%</label>
+                                    <input type="range" id="qr-logo-size" min="10" max="50" value="30" oninput="document.getElementById('logo-size-val').textContent=this.value;updateQR()" class="w-full" style="accent-color:var(--orange)">
+                                </div>
+                                <div>
+                                    <label class="label">Logo Margin: <span id="logo-margin-val">5</span>px</label>
+                                    <input type="range" id="qr-logo-margin" min="0" max="20" value="5" oninput="document.getElementById('logo-margin-val').textContent=this.value;updateQR()" class="w-full" style="accent-color:var(--orange)">
+                                </div>
+                            </div>
+                            <label class="flex items-center gap-2 mt-2 cursor-pointer">
+                                <input type="checkbox" id="qr-logo-hide-dots" checked onchange="updateQR()" style="accent-color:var(--orange)">
+                                <span class="text-xs text-neutral-500 font-medium">Hide dots behind logo</span>
+                            </label>
+                        </div>
+                        <!-- 6. Quiet Zone -->
+                        <div>
+                            <label class="label">Quiet Zone (Margin): <span id="margin-val">10</span>px</label>
+                            <input type="range" id="qr-margin" min="0" max="30" value="10" oninput="document.getElementById('margin-val').textContent=this.value;updateQR()" class="w-full" style="accent-color:var(--orange)">
+                        </div>
+                        <!-- 7. Size & Error Correction -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="label">Export Size</label>
                                 <select id="qr-size" class="input-field" onchange="updateQR()">
                                     <option value="256">256 × 256</option>
                                     <option value="512">512 × 512</option>
                                     <option value="1024" selected>1024 × 1024</option>
+                                    <option value="2048">2048 × 2048</option>
                                 </select>
                             </div>
                             <div>
@@ -269,22 +370,28 @@ textarea.input-field{resize:vertical}
                                placeholder="Give your QR a name (optional)...">
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2 mb-2">
+                    <div class="grid grid-cols-3 gap-2 mb-2">
                         <button onclick="downloadQR('png')" id="btn-download-png" class="action-btn primary" disabled>
-                            <i data-lucide="download" style="width:13px;height:13px"></i> PNG
+                            <i data-lucide="download" style="width:16px;height:16px"></i> PNG
                         </button>
                         <button onclick="downloadQR('svg')" id="btn-download-svg" class="action-btn" disabled>
-                            <i data-lucide="download" style="width:13px;height:13px"></i> SVG
+                            <i data-lucide="download" style="width:16px;height:16px"></i> SVG
                         </button>
                         <button onclick="saveQRToDB()" id="btn-save" class="action-btn" disabled>
-                            <i data-lucide="save" style="width:13px;height:13px"></i> Save
+                            <i data-lucide="save" style="width:16px;height:16px"></i> Save
                         </button>
                         <button onclick="printQR()" id="btn-print" class="action-btn" disabled>
-                            <i data-lucide="printer" style="width:13px;height:13px"></i> Print
+                            <i data-lucide="printer" style="width:16px;height:16px"></i> Print
+                        </button>
+                        <button onclick="copyQR()" id="btn-copy" class="action-btn" disabled>
+                            <i data-lucide="clipboard" style="width:16px;height:16px"></i> Copy
+                        </button>
+                        <button onclick="downloadPDF()" id="btn-pdf" class="action-btn" disabled>
+                            <i data-lucide="file-text" style="width:16px;height:16px"></i> PDF
                         </button>
                     </div>
                     <button onclick="downloadQR('png')" id="btn-download-big" class="action-btn primary w-full" style="padding:13px;font-size:14px" disabled>
-                        <i data-lucide="download" style="width:15px;height:15px"></i> Download QR Code
+                        <i data-lucide="download" style="width:18px;height:18px"></i> Download QR Code
                     </button>
 
                     <form id="save-form" method="POST" action="<?= url('/generate?type=' . $selectedType) ?>" style="display:none">
@@ -328,8 +435,11 @@ textarea.input-field{resize:vertical}
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
 <script>
 let qrInstance = null;
+let logoDataUrl = '';
+let debounceTimer = null;
 const currentType = '<?= $selectedType ?>';
 
 function getQRContent() {
@@ -361,21 +471,70 @@ function getQRContent() {
     }
 }
 
-function updateQR() {
-    const content   = getQRContent();
-    const container = document.getElementById('qr-code');
-    const placeholder = document.getElementById('qr-placeholder');
-    const wrapper   = document.getElementById('qr-wrapper');
-    const size      = parseInt(document.getElementById('qr-size').value);
-    const fg        = document.getElementById('qr-fg-color').value;
-    const bg        = document.getElementById('qr-bg-color').value;
-    const ecMap     = {L:1,M:0,Q:3,H:2};
-    const ec        = ecMap[document.getElementById('qr-ec').value] || 2;
+function getQROptions() {
+    const fg = document.getElementById('qr-fg-color').value;
+    const bg = document.getElementById('qr-bg-color').value;
+    const ec = document.getElementById('qr-ec').value;
+    const dotType = document.getElementById('qr-dot-type').value;
+    const cornerSq = document.getElementById('qr-corner-square').value;
+    const cornerDot = document.getElementById('qr-corner-dot').value;
+    const margin = parseInt(document.getElementById('qr-margin').value);
 
     document.getElementById('qr-fg-hex').value = fg;
     document.getElementById('qr-bg-hex').value = bg;
 
-    const btns = ['btn-download-png','btn-download-svg','btn-save','btn-print','btn-download-big'];
+    const opts = {
+        width: 300, height: 300, margin: margin,
+        data: getQRContent(),
+        qrOptions: { errorCorrectionLevel: ec },
+        dotsOptions: { type: dotType, color: fg },
+        backgroundOptions: { color: bg },
+    };
+
+    // Corner frame
+    if (cornerSq) {
+        opts.cornersSquareOptions = { type: cornerSq };
+        if (document.getElementById('qr-corner-sq-custom').checked)
+            opts.cornersSquareOptions.color = document.getElementById('qr-corner-sq-color').value;
+        else
+            opts.cornersSquareOptions.color = fg;
+    }
+
+    // Corner dot
+    if (cornerDot) {
+        opts.cornersDotOptions = { type: cornerDot };
+        if (document.getElementById('qr-corner-dot-custom').checked)
+            opts.cornersDotOptions.color = document.getElementById('qr-corner-dot-color').value;
+        else
+            opts.cornersDotOptions.color = fg;
+    }
+
+    // Logo
+    if (logoDataUrl) {
+        opts.image = logoDataUrl;
+        opts.imageOptions = {
+            hideBackgroundDots: document.getElementById('qr-logo-hide-dots').checked,
+            imageSize: parseInt(document.getElementById('qr-logo-size').value) / 100,
+            margin: parseInt(document.getElementById('qr-logo-margin').value),
+        };
+    }
+
+    return opts;
+}
+
+function updateQR() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(_doUpdateQR, 160);
+}
+
+function _doUpdateQR() {
+    const content     = getQRContent();
+    const container   = document.getElementById('qr-code');
+    const placeholder = document.getElementById('qr-placeholder');
+    const wrapper     = document.getElementById('qr-wrapper');
+    const bg          = document.getElementById('qr-bg-color').value;
+
+    const btns = ['btn-download-png','btn-download-svg','btn-save','btn-print','btn-copy','btn-pdf','btn-download-big'];
 
     if (!content) {
         container.innerHTML = '';
@@ -383,6 +542,7 @@ function updateQR() {
         placeholder.style.display = 'flex';
         wrapper.classList.remove('has-qr');
         btns.forEach(b => document.getElementById(b).disabled = true);
+        qrInstance = null;
         return;
     }
 
@@ -393,36 +553,40 @@ function updateQR() {
     container.style.backgroundColor = bg;
     btns.forEach(b => document.getElementById(b).disabled = false);
 
-    qrInstance = new QRCode(container, {
-        text: content,
-        width: Math.min(size, 300),
-        height: Math.min(size, 300),
-        colorDark: fg,
-        colorLight: bg,
-        correctLevel: ec
-    });
+    const opts = getQROptions();
+    qrInstance = new QRCodeStyling(opts);
+    qrInstance.append(container);
 }
 
 function downloadQR(fmt) {
-    const c  = getQRContent(); if (!c) return;
-    const cv = document.querySelector('#qr-code canvas'); if (!cv) return;
-    if (fmt === 'png') {
-        const s  = parseInt(document.getElementById('qr-size').value);
-        const h  = document.createElement('canvas'); h.width = s; h.height = s;
-        const x  = h.getContext('2d'); x.imageSmoothingEnabled = false;
-        x.drawImage(cv, 0, 0, s, s);
-        const l  = document.createElement('a');
-        l.download = `qrcode_${currentType}_${Date.now()}.png`;
-        l.href     = h.toDataURL('image/png'); l.click();
-    } else {
-        const d   = cv.toDataURL('image/png');
-        const s   = parseInt(document.getElementById('qr-size').value);
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${s}" height="${s}"><image width="${s}" height="${s}" href="${d}"/></svg>`;
-        const b   = new Blob([svg], {type:'image/svg+xml'});
-        const l   = document.createElement('a');
-        l.download = `qrcode_${currentType}_${Date.now()}.svg`;
-        l.href     = URL.createObjectURL(b); l.click();
-    }
+    if (!qrInstance) return;
+    const s = parseInt(document.getElementById('qr-size').value);
+    // Re-render at export size
+    const opts = getQROptions();
+    opts.width = s; opts.height = s;
+    const exportQR = new QRCodeStyling(opts);
+    const tmp = document.createElement('div');
+    tmp.style.cssText = 'position:absolute;left:-9999px';
+    document.body.appendChild(tmp);
+    exportQR.append(tmp);
+    setTimeout(() => {
+        exportQR.download({ name: `qrcode_${currentType}_${Date.now()}`, extension: fmt === 'svg' ? 'svg' : 'png' });
+        document.body.removeChild(tmp);
+    }, 300);
+}
+
+function handleLogo(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => { logoDataUrl = e.target.result; updateQR(); };
+    reader.readAsDataURL(file);
+}
+
+function clearLogo() {
+    logoDataUrl = '';
+    document.getElementById('qr-logo-file').value = '';
+    updateQR();
 }
 
 function saveQRToDB() {
@@ -439,7 +603,7 @@ function saveQRToDB() {
 function printQR() {
     const cv = document.querySelector('#qr-code canvas'); if (!cv) return;
     const w  = window.open('','_blank');
-    w.document.write(`<html><head><title>QR Code</title></head><body style="display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#fff;"><img src="${cv.toDataURL()}" style="max-width:400px;"></body></html>`);
+    w.document.write(`<html><head><title>QR Code - ${currentType}</title></head><body style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#fff;font-family:sans-serif;"><h2 style="margin-bottom:20px;color:#333">${document.getElementById('qr-save-title').value||currentType+' QR Code'}</h2><img src="${cv.toDataURL()}" style="max-width:400px;"><p style="margin-top:16px;color:#999;font-size:12px">Generated by QRCode Pro</p></body></html>`);
     w.document.close(); w.onload = () => { w.print(); };
 }
 
@@ -451,7 +615,64 @@ function toggleCust(head) {
     if (!isOpen) setTimeout(() => { body.style.maxHeight = body.scrollHeight + 50 + 'px'; }, 380);
 }
 
+function copyQR() {
+    if (!qrInstance) return;
+    qrInstance.getRawData('png').then(blob => {
+        navigator.clipboard.write([new ClipboardItem({'image/png': blob})]).then(() => {
+            const btn = document.getElementById('btn-copy');
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="check" style="width:16px;height:16px"></i> Copied!';
+            lucide.createIcons();
+            setTimeout(() => { btn.innerHTML = orig; lucide.createIcons(); }, 2000);
+        });
+    });
+}
+
+function downloadPDF() {
+    if (!qrInstance) return;
+    const s = parseInt(document.getElementById('qr-size').value);
+    const opts = getQROptions();
+    opts.width = s; opts.height = s;
+    const exportQR = new QRCodeStyling(opts);
+    const tmp = document.createElement('div');
+    tmp.style.cssText = 'position:absolute;left:-9999px';
+    document.body.appendChild(tmp);
+    exportQR.append(tmp);
+    setTimeout(() => {
+        const cv = tmp.querySelector('canvas');
+        if (!cv) { document.body.removeChild(tmp); return; }
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const title = document.getElementById('qr-save-title').value || currentType + ' QR Code';
+        doc.setFont('helvetica','bold'); doc.setFontSize(20);
+        doc.text(title, 105, 30, {align:'center'});
+        doc.setFont('helvetica','normal'); doc.setFontSize(10);
+        doc.text('Generated by QRCode Pro', 105, 38, {align:'center'});
+        const imgData = cv.toDataURL('image/png');
+        const qrSize = 100;
+        doc.addImage(imgData, 'PNG', (210-qrSize)/2, 50, qrSize, qrSize);
+        doc.setFontSize(8); doc.setTextColor(150);
+        doc.text('QRCode Pro - ' + new Date().toLocaleDateString(), 105, 160, {align:'center'});
+        doc.save('qrcode_' + currentType + '_' + Date.now() + '.pdf');
+        document.body.removeChild(tmp);
+    }, 400);
+}
+
+function applyPreset(el) {
+    document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('active-preset'));
+    el.classList.add('active-preset');
+    const fg = el.getAttribute('data-fg');
+    const bg = el.getAttribute('data-bg');
+    document.getElementById('qr-fg-color').value = fg;
+    document.getElementById('qr-fg-hex').value = fg;
+    document.getElementById('qr-bg-color').value = bg;
+    document.getElementById('qr-bg-hex').value = bg;
+    updateQR();
+}
+
 document.addEventListener('DOMContentLoaded', () => { lucide.createIcons(); });
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

@@ -11,6 +11,12 @@ $stats       = getUserStats($user['id']);
 $recentCodes = getUserQRCodes($user['id'], 8);
 $types       = getQRTypes();
 
+// Recent 7-day activity for analytics chart
+$db = getDB();
+$activityStmt = $db->prepare("SELECT DATE(created_at) as day, COUNT(*) as count FROM qr_codes WHERE user_id = ? AND created_at >= DATE('now', '-7 days') GROUP BY DATE(created_at) ORDER BY day");
+$activityStmt->execute([$user['id']]);
+$activity = $activityStmt->fetchAll();
+
 // ── Now safe to output HTML ────────────────────────────────────────────────────
 $pageTitle = 'Dashboard';
 require_once __DIR__ . '/includes/header.php';
@@ -28,7 +34,7 @@ require_once __DIR__ . '/includes/header.php';
             <p class="text-neutral-500 mt-1">Here's your QR code activity at a glance</p>
         </div>
         <a href="<?= url('/generate') ?>" class="btn btn-p btn-lg self-start sm:self-auto">
-            <i data-lucide="plus" class="w-5 h-5"></i> New QR Code
+            <i data-lucide="plus" class="w-6 h-6"></i> New QR Code
         </a>
     </div>
 
@@ -36,8 +42,8 @@ require_once __DIR__ . '/includes/header.php';
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         <div class="card p-6 a-up d1">
             <div class="flex items-center justify-between mb-4">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:var(--orange-light)">
-                    <i data-lucide="qr-code" class="w-5 h-5" style="color:var(--orange)"></i>
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:var(--orange-light)">
+                    <i data-lucide="qr-code" class="w-6 h-6" style="color:var(--orange)"></i>
                 </div>
                 <span class="badge badge-o">TOTAL</span>
             </div>
@@ -46,8 +52,8 @@ require_once __DIR__ . '/includes/header.php';
         </div>
         <div class="card p-6 a-up d2">
             <div class="flex items-center justify-between mb-4">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-50">
-                    <i data-lucide="scan-line" class="w-5 h-5 text-blue-500"></i>
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-50">
+                    <i data-lucide="scan-line" class="w-6 h-6 text-blue-500"></i>
                 </div>
                 <span class="badge badge-g">SCANS</span>
             </div>
@@ -56,8 +62,8 @@ require_once __DIR__ . '/includes/header.php';
         </div>
         <div class="card p-6 a-up d3">
             <div class="flex items-center justify-between mb-4">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-purple-50">
-                    <i data-lucide="folder-open" class="w-5 h-5 text-purple-500"></i>
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-purple-50">
+                    <i data-lucide="folder-open" class="w-6 h-6 text-purple-500"></i>
                 </div>
                 <span class="badge badge-g">TYPES</span>
             </div>
@@ -66,8 +72,8 @@ require_once __DIR__ . '/includes/header.php';
         </div>
         <div class="card p-6 a-up d4">
             <div class="flex items-center justify-between mb-4">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-green-50">
-                    <i data-lucide="crown" class="w-5 h-5 text-green-500"></i>
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-green-50">
+                    <i data-lucide="crown" class="w-6 h-6 text-green-500"></i>
                 </div>
                 <span class="badge badge-gr">PLAN</span>
             </div>
@@ -85,8 +91,8 @@ require_once __DIR__ . '/includes/header.php';
         <div class="grid grid-cols-4 sm:grid-cols-8 gap-3">
             <?php foreach (['url','wifi','vcard','email','phone','whatsapp','upi','text'] as $key):
                 $t = $types[$key] ?? ['name'=>$key,'icon'=>'qr-code','color'=>'#999']; ?>
-            <a href="<?= url('/generate?type='.$key) ?>" class="card card-hover p-3.5 text-center group" style="border-radius:14px">
-                <div class="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center transition-transform duration-300 group-hover:scale-110" style="background:<?= $t['color'] ?>15">
+            <a href="<?= url('/generate?type='.$key) ?>" class="card card-hover p-4 text-center group" style="border-radius:16px">
+                <div class="w-12 h-12 rounded-xl mx-auto mb-2 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm" style="background:<?= $t['color'] ?>15">
                     <i data-lucide="<?= $t['icon'] ?>" class="w-5 h-5" style="color:<?= $t['color'] ?>"></i>
                 </div>
                 <span class="text-xs font-bold text-neutral-600 leading-snug"><?= $t['name'] ?></span>
@@ -135,6 +141,131 @@ require_once __DIR__ . '/includes/header.php';
         </div>
         <?php endif; ?>
     </div>
+
+    <!-- Analytics -->
+    <?php if ($stats['total_codes'] > 0): ?>
+    <div class="mt-10 a-up d5">
+        <div class="flex items-center justify-between mb-5">
+            <h2 class="font-display font-bold text-xl text-neutral-900">Analytics</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- QR Types Distribution -->
+            <div class="card p-6" style="border-radius:1.5rem">
+                <h3 class="font-display font-bold text-base text-neutral-800 mb-4">QR Types Distribution</h3>
+                <div style="position:relative;height:280px">
+                    <canvas id="typesChart"></canvas>
+                </div>
+            </div>
+            <!-- Recent Activity -->
+            <div class="card p-6" style="border-radius:1.5rem">
+                <h3 class="font-display font-bold text-base text-neutral-800 mb-4">Recent Activity <span class="text-xs text-neutral-400 font-medium">(Last 7 days)</span></h3>
+                <div style="position:relative;height:280px">
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
+
+<?php if ($stats['total_codes'] > 0): ?>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ── QR Types Doughnut Chart ──────────────────────────────────────────
+    const typeLabels = <?= json_encode(array_column($stats['by_type'], 'type')) ?>;
+    const typeCounts = <?= json_encode(array_map('intval', array_column($stats['by_type'], 'count'))) ?>;
+    const typeColors = [
+        '#f97316','#3b82f6','#8b5cf6','#10b981','#ef4444',
+        '#f59e0b','#06b6d4','#ec4899','#6366f1','#14b8a6'
+    ];
+
+    new Chart(document.getElementById('typesChart'), {
+        type: 'doughnut',
+        data: {
+            labels: typeLabels,
+            datasets: [{
+                data: typeCounts,
+                backgroundColor: typeColors.slice(0, typeLabels.length),
+                borderWidth: 0,
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '62%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 16,
+                        usePointStyle: true,
+                        pointStyleWidth: 10,
+                        font: { size: 12, weight: 600 }
+                    }
+                }
+            }
+        }
+    });
+
+    // ── Recent Activity Bar Chart ────────────────────────────────────────
+    const activityData = <?= json_encode($activity) ?>;
+
+    // Build last 7 days labels & fill with data
+    const days = [];
+    const counts = [];
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const key = d.toISOString().slice(0, 10);
+        days.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+        const found = activityData.find(r => r.day === key);
+        counts.push(found ? parseInt(found.count) : 0);
+    }
+
+    new Chart(document.getElementById('activityChart'), {
+        type: 'bar',
+        data: {
+            labels: days,
+            datasets: [{
+                label: 'QR Codes',
+                data: counts,
+                backgroundColor: '#f9731680',
+                borderColor: '#f97316',
+                borderWidth: 2,
+                borderRadius: 8,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        font: { size: 12, weight: 600 },
+                        color: '#a3a3a3'
+                    },
+                    grid: { color: '#f5f5f5' }
+                },
+                x: {
+                    ticks: {
+                        font: { size: 11, weight: 600 },
+                        color: '#a3a3a3'
+                    },
+                    grid: { display: false }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+});
+</script>
+<?php endif; ?>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

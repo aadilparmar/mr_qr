@@ -43,8 +43,8 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="w-full max-w-md">
 
         <div class="text-center mb-8 a-up">
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5" style="background:linear-gradient(135deg,var(--orange),#FF9E5E);box-shadow:0 6px 24px rgba(255,92,53,.3)">
-                <i data-lucide="user-plus" class="w-7 h-7 text-white"></i>
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5" style="background:linear-gradient(135deg,var(--orange),#FF9E5E);box-shadow:0 8px 28px rgba(255,92,53,.35)">
+                <i data-lucide="user-plus" class="w-8 h-8 text-white"></i>
             </div>
             <h1 class="font-display font-extrabold text-3xl text-neutral-900 mb-2">Create account</h1>
             <p class="text-neutral-500">Generate QR codes in seconds. It's free.</p>

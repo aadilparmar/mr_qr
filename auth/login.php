@@ -33,8 +33,8 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="w-full max-w-md">
 
         <div class="text-center mb-8 a-up">
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5" style="background:var(--orange);box-shadow:0 6px 24px rgba(255,92,53,.3)">
-                <i data-lucide="log-in" class="w-7 h-7 text-white"></i>
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5" style="background:var(--orange);box-shadow:0 8px 28px rgba(255,92,53,.35)">
+                <i data-lucide="log-in" class="w-8 h-8 text-white"></i>
             </div>
             <h1 class="font-display font-extrabold text-3xl text-neutral-900 mb-2">Welcome back</h1>
             <p class="text-neutral-500">Log in to your QRPro account</p>

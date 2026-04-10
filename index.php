@@ -68,8 +68,8 @@ $types = getQRTypes();
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             <?php foreach ($types as $key => $type): if ($key === 'bulk') continue; ?>
             <a href="<?= url('/generate?type=' . $key) ?>" class="bg-white rounded-2xl p-5 text-center group card-hover border border-slate-100">
-                <div class="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110" style="background: <?= $type['color'] ?>12;">
-                    <i data-lucide="<?= $type['icon'] ?>" class="w-5 h-5" style="color: <?= $type['color'] ?>"></i>
+                <div class="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-sm" style="background: <?= $type['color'] ?>15;">
+                    <i data-lucide="<?= $type['icon'] ?>" class="w-7 h-7" style="color: <?= $type['color'] ?>"></i>
                 </div>
                 <h3 class="text-sm font-semibold mb-1 text-slate-700"><?= $type['name'] ?></h3>
                 <p class="text-xs text-slate-400 leading-snug"><?= $type['desc'] ?></p>
@@ -87,17 +87,17 @@ $types = getQRTypes();
         </div>
         <div class="grid md:grid-cols-3 gap-6">
             <div class="bg-white rounded-3xl p-8 shadow-card border border-slate-100 card-hover">
-                <div class="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mb-5"><i data-lucide="layers" class="w-7 h-7 text-brand-500"></i></div>
+                <div class="w-16 h-16 rounded-2xl bg-brand-50 flex items-center justify-center mb-5 shadow-sm"><i data-lucide="layers" class="w-8 h-8 text-brand-500"></i></div>
                 <h3 class="font-display text-xl font-bold mb-3 text-slate-800">Bulk Generation</h3>
                 <p class="text-slate-500 text-sm leading-relaxed">Generate up to 100 QR codes at once. Upload a CSV or enter data manually. Download as a ZIP archive.</p>
             </div>
             <div class="bg-white rounded-3xl p-8 shadow-card border border-slate-100 card-hover">
-                <div class="w-14 h-14 rounded-2xl bg-lilac-50 flex items-center justify-center mb-5"><i data-lucide="palette" class="w-7 h-7 text-lilac-500"></i></div>
+                <div class="w-16 h-16 rounded-2xl bg-lilac-50 flex items-center justify-center mb-5 shadow-sm"><i data-lucide="palette" class="w-8 h-8 text-lilac-500"></i></div>
                 <h3 class="font-display text-xl font-bold mb-3 text-slate-800">Full Customization</h3>
                 <p class="text-slate-500 text-sm leading-relaxed">Customize foreground, background colors, error correction, size, and format. Match your brand perfectly.</p>
             </div>
             <div class="bg-white rounded-3xl p-8 shadow-card border border-slate-100 card-hover">
-                <div class="w-14 h-14 rounded-2xl bg-sky-50 flex items-center justify-center mb-5"><i data-lucide="file-text" class="w-7 h-7 text-sky-500"></i></div>
+                <div class="w-16 h-16 rounded-2xl bg-sky-50 flex items-center justify-center mb-5 shadow-sm"><i data-lucide="file-text" class="w-8 h-8 text-sky-500"></i></div>
                 <h3 class="font-display text-xl font-bold mb-3 text-slate-800">PDF & Image Export</h3>
                 <p class="text-slate-500 text-sm leading-relaxed">Export QR codes as PNG, SVG, or embedded in PDF. Perfect for print materials and business cards.</p>
             </div>

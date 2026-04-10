@@ -109,6 +109,19 @@ function initDatabase(): void {
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )");
 
+    $db->exec("CREATE TABLE IF NOT EXISTS contact_messages (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        name       TEXT NOT NULL,
+        email      TEXT NOT NULL,
+        subject    TEXT NOT NULL,
+        message    TEXT NOT NULL,
+        is_read    INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )");
+
+    // ── Add favorites column if missing ──
+    try { $db->exec("ALTER TABLE qr_codes ADD COLUMN is_favorite INTEGER DEFAULT 0"); } catch (PDOException $e) { /* already exists */ }
+
     $db->exec("CREATE INDEX IF NOT EXISTS idx_qr_user ON qr_codes(user_id)");
     $db->exec("CREATE INDEX IF NOT EXISTS idx_qr_type ON qr_codes(type)");
 }

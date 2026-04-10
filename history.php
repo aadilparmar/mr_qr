@@ -6,12 +6,14 @@ require_once __DIR__ . '/includes/functions.php';
 
 requireLogin();
 
-$types      = getQRTypes();
-$filterType = $_GET['type'] ?? '';
-$page       = max(1, (int)($_GET['page'] ?? 1));
-$perPage    = 12;
-$offset     = ($page - 1) * $perPage;
+$currentUser = getCurrentUser();
+$types       = getQRTypes();
+$filterType  = $_GET['type'] ?? '';
+$page        = max(1, (int)($_GET['page'] ?? 1));
+$perPage     = 12;
+$offset      = ($page - 1) * $perPage;
 
+// ── Handle delete ────────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $deleted = deleteQRCode((int)$_POST['delete_id'], $currentUser['id']);
     if ($deleted) setFlash('success', 'QR code deleted');
@@ -19,11 +21,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     exit;
 }
 
-$codes      = getUserQRCodes($currentUser['id'], $perPage, $offset, $filterType);
+// ── Handle favorite toggle ─────────────────────────────────────────────────
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['favorite_id'])) {
+    toggleFavorite((int)$_POST['favorite_id'], $currentUser['id']);
+    $qs = $_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '';
+    header('Location: ' . url('/history') . $qs);
+    exit;
+}
+
+$filterFavorites = isset($_GET['favorites']);
+// ── Build custom query to support favorites filter ─────────────────────────
 $db         = getDB();
+$sql        = "SELECT * FROM qr_codes WHERE user_id = ?";
 $countSql   = "SELECT COUNT(*) as total FROM qr_codes WHERE user_id = ?";
+$params      = [$currentUser['id']];
 $countParams = [$currentUser['id']];
-if ($filterType) { $countSql .= " AND type = ?"; $countParams[] = $filterType; }
+if ($filterType) {
+    $sql .= " AND type = ?"; $params[] = $filterType;
+    $countSql .= " AND type = ?"; $countParams[] = $filterType;
+}
+if ($filterFavorites) {
+    $sql .= " AND is_favorite = 1";
+    $countSql .= " AND is_favorite = 1";
+}
+$sql .= " ORDER BY created_at DESC LIMIT ? OFFSET ?";
+$params[] = $perPage;
+$params[] = $offset;
+$stmt = $db->prepare($sql);
+$stmt->execute($params);
+$codes = $stmt->fetchAll();
+
 $stmt = $db->prepare($countSql);
 $stmt->execute($countParams);
 $totalCodes = $stmt->fetch()['total'];
@@ -50,12 +77,28 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- Filters -->
     <div class="flex flex-wrap gap-2 mb-8 a-up d1">
-        <a href="<?= url('/history') ?>" class="btn btn-sm <?= !$filterType ? 'btn-p' : 'btn-s' ?>">All</a>
+        <a href="<?= url('/history') ?>" class="btn btn-sm <?= !$filterType && !$filterFavorites ? 'btn-p' : 'btn-s' ?>">All</a>
+        <a href="<?= url('/history?favorites=1') ?>" class="btn btn-sm <?= $filterFavorites ? 'btn-p' : 'btn-s' ?>">
+            <i data-lucide="star" class="w-3.5 h-3.5"></i> Favorites
+        </a>
         <?php foreach ($types as $key => $type): if ($key === 'bulk') continue; ?>
         <a href="<?= url('/history?type=' . $key) ?>" class="btn btn-sm <?= $filterType === $key ? 'btn-p' : 'btn-s' ?>">
             <?= $type['name'] ?>
         </a>
         <?php endforeach; ?>
+    </div>
+
+    <!-- Search & Export -->
+    <div class="flex flex-col sm:flex-row gap-3 mb-6 a-up d1">
+        <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"></i>
+            <input type="text" id="qr-search" placeholder="Search by title, content, or type..."
+                   class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-neutral-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                   style="background:var(--bg2)">
+        </div>
+        <button onclick="exportCSV()" class="btn btn-s btn-sm self-start sm:self-auto">
+            <i data-lucide="download" class="w-4 h-4"></i> Export CSV
+        </button>
     </div>
 
     <?php if (empty($codes)): ?>
@@ -72,7 +115,13 @@ require_once __DIR__ . '/includes/header.php';
         <?php foreach ($codes as $code):
             $typeInfo = $types[$code['type']] ?? ['name'=>$code['type'],'icon'=>'qr-code','color'=>'#999'];
             $settings = json_decode($code['settings'], true) ?: []; ?>
-        <div class="card group overflow-hidden" style="border-radius:16px">
+        <div class="card group overflow-hidden qr-card"
+             style="border-radius:16px"
+             data-title="<?= htmlspecialchars($code['title'] ?: $typeInfo['name']) ?>"
+             data-content="<?= htmlspecialchars($code['content']) ?>"
+             data-type="<?= htmlspecialchars($code['type']) ?>"
+             data-created="<?= htmlspecialchars($code['created_at']) ?>"
+             data-favorite="<?= $code['is_favorite'] ?? 0 ?>">
             <!-- QR preview -->
             <div class="p-4 flex items-center justify-center" style="background:var(--bg2);min-height:120px">
                 <div class="qr-mini"
@@ -94,6 +143,21 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="flex items-center justify-between mt-3 pt-3 border-t border-neutral-100">
                     <span class="text-xs text-neutral-400 font-medium"><?= date('M j', strtotime($code['created_at'])) ?></span>
                     <div class="flex items-center gap-1.5">
+                        <!-- Favorite toggle -->
+                        <form method="POST" class="inline">
+                            <input type="hidden" name="favorite_id" value="<?= $code['id'] ?>">
+                            <button type="submit"
+                                    class="w-7 h-7 rounded-lg flex items-center justify-center transition-all <?= ($code['is_favorite'] ?? 0) ? 'text-yellow-500 hover:bg-yellow-50' : 'text-neutral-400 hover:text-yellow-500 hover:bg-yellow-50' ?>"
+                                    title="<?= ($code['is_favorite'] ?? 0) ? 'Remove from favorites' : 'Add to favorites' ?>">
+                                <i data-lucide="<?= ($code['is_favorite'] ?? 0) ? 'star' : 'star' ?>" class="w-3.5 h-3.5" <?= ($code['is_favorite'] ?? 0) ? 'style="fill:currentColor"' : '' ?>></i>
+                            </button>
+                        </form>
+                        <!-- Copy content -->
+                        <button onclick="copyContent(this)" data-copy="<?= htmlspecialchars($code['content']) ?>"
+                                class="w-7 h-7 rounded-lg flex items-center justify-center text-neutral-400 hover:text-green-500 hover:bg-green-50 transition-all"
+                                title="Copy content">
+                            <i data-lucide="clipboard-copy" class="w-3.5 h-3.5"></i>
+                        </button>
                         <a href="<?= url('/generate?type=' . $code['type']) ?>"
                            class="w-7 h-7 rounded-lg flex items-center justify-center text-neutral-400 hover:text-blue-500 hover:bg-blue-50 transition-all"
                            title="Generate similar">
@@ -118,18 +182,18 @@ require_once __DIR__ . '/includes/header.php';
     <?php if ($totalPages > 1): ?>
     <div class="flex items-center justify-center gap-2 a-up d3">
         <?php if ($page > 1): ?>
-        <a href="?page=<?= $page - 1 ?><?= $filterType ? "&type={$filterType}" : '' ?>" class="btn btn-s btn-sm">
+        <a href="?page=<?= $page - 1 ?><?= $filterType ? "&type={$filterType}" : '' ?><?= $filterFavorites ? '&favorites=1' : '' ?>" class="btn btn-s btn-sm">
             <i data-lucide="chevron-left" class="w-4 h-4"></i> Prev
         </a>
         <?php endif; ?>
         <?php for ($i = max(1, $page - 2); $i <= min($totalPages, $page + 2); $i++): ?>
-        <a href="?page=<?= $i ?><?= $filterType ? "&type={$filterType}" : '' ?>"
+        <a href="?page=<?= $i ?><?= $filterType ? "&type={$filterType}" : '' ?><?= $filterFavorites ? '&favorites=1' : '' ?>"
            class="btn btn-sm <?= $i === $page ? 'btn-p' : 'btn-s' ?>">
             <?= $i ?>
         </a>
         <?php endfor; ?>
         <?php if ($page < $totalPages): ?>
-        <a href="?page=<?= $page + 1 ?><?= $filterType ? "&type={$filterType}" : '' ?>" class="btn btn-s btn-sm">
+        <a href="?page=<?= $page + 1 ?><?= $filterType ? "&type={$filterType}" : '' ?><?= $filterFavorites ? '&favorites=1' : '' ?>" class="btn btn-s btn-sm">
             Next <i data-lucide="chevron-right" class="w-4 h-4"></i>
         </a>
         <?php endif; ?>
@@ -145,7 +209,72 @@ document.addEventListener('DOMContentLoaded', function () {
         if (c) new QRCode(el, {text:c, width:100, height:100, colorDark:fg, colorLight:bg, correctLevel:QRCode.CorrectLevel.M});
     });
     lucide.createIcons();
+
+    // ── Live search ────────────────────────────────────────────────────────
+    const searchInput = document.getElementById('qr-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const q = this.value.toLowerCase().trim();
+            document.querySelectorAll('.qr-card').forEach(card => {
+                const title   = (card.dataset.title   || '').toLowerCase();
+                const content = (card.dataset.content || '').toLowerCase();
+                const type    = (card.dataset.type    || '').toLowerCase();
+                const match   = !q || title.includes(q) || content.includes(q) || type.includes(q);
+                card.style.display = match ? '' : 'none';
+            });
+        });
+    }
 });
+
+// ── Copy content to clipboard ──────────────────────────────────────────────
+function copyContent(btn) {
+    const text = btn.dataset.copy;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+        const icon = btn.querySelector('[data-lucide]');
+        if (icon) {
+            icon.setAttribute('data-lucide', 'check');
+            lucide.createIcons();
+            setTimeout(() => {
+                icon.setAttribute('data-lucide', 'clipboard-copy');
+                lucide.createIcons();
+            }, 1500);
+        }
+    }).catch(() => {
+        // Fallback for older browsers
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+    });
+}
+
+// ── Export CSV ──────────────────────────────────────────────────────────────
+function exportCSV() {
+    const cards = document.querySelectorAll('.qr-card');
+    const rows = [['Title', 'Type', 'Content', 'Created At']];
+    cards.forEach(card => {
+        if (card.style.display === 'none') return; // skip hidden (filtered out)
+        rows.push([
+            '"' + (card.dataset.title   || '').replace(/"/g, '""') + '"',
+            '"' + (card.dataset.type    || '').replace(/"/g, '""') + '"',
+            '"' + (card.dataset.content || '').replace(/"/g, '""') + '"',
+            '"' + (card.dataset.created || '').replace(/"/g, '""') + '"'
+        ]);
+    });
+    if (rows.length <= 1) { alert('No QR codes to export.'); return; }
+    const csv  = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href  = URL.createObjectURL(blob);
+    link.download = 'qr_codes_export.csv';
+    link.click();
+    URL.revokeObjectURL(link.href);
+}
 </script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

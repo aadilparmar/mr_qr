@@ -23,6 +23,10 @@ RewriteRule ^dashboard/?$      dashboard.php [L]
 RewriteRule ^generate/?$       generate.php [L]
 RewriteRule ^history/?$        history.php [L]
 RewriteRule ^bulk/?$           bulk.php [L]
+RewriteRule ^contact/?$       contact.php [L]
+RewriteRule ^about/?$         about.php [L]
+RewriteRule ^privacy/?$       privacy.php [L]
+RewriteRule ^scanner/?$       scanner.php [L]
 
 # API routes
 RewriteRule ^api/generate/?$   api/generate.php [L]
@@ -39,6 +43,4 @@ RewriteRule ^includes/ - [F,L]
 # Deny access to .env and hidden files
 RewriteRule (^\.|/\.) - [F]
 
-# PHP error display (remove in production)
-php_flag display_errors Off
-php_value error_reporting 0
+# PHP error display — handled in PHP instead of .htaccess for CGI/FastCGI compatibility

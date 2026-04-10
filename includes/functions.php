@@ -231,3 +231,11 @@ function generateCSRF(): string {
 function verifyCSRF(string $token): bool {
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
+
+// ─── TOGGLE FAVORITE ─────────────────────────────────────────────────────────
+function toggleFavorite(int $id, int $userId): bool {
+    $db   = getDB();
+    $stmt = $db->prepare("UPDATE qr_codes SET is_favorite = CASE WHEN is_favorite = 1 THEN 0 ELSE 1 END WHERE id = ? AND user_id = ?");
+    $stmt->execute([$id, $userId]);
+    return $stmt->rowCount() > 0;
+}
