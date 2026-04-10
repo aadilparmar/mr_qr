@@ -1425,6 +1425,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.cp-panel.show').forEach(p => p.classList.remove('show'));
         if (!isOpen) { dropdown.classList.add('show'); trigger.classList.add('open'); }
     });
+    }); // ← closes select.forEach
 
     // ═══════════════════════════════════════════════════════════════════
     // AUTO-UPGRADE: Custom Color Pickers (runs inside DOMContentLoaded)
