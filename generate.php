@@ -1381,12 +1381,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
-});
-
-// ═══════════════════════════════════════════════════════════════════════════
-// AUTO-UPGRADE: Custom Select Dropdowns
-// ═══════════════════════════════════════════════════════════════════════════
-document.querySelectorAll('select.input-field').forEach(sel => {
+    // ═══════════════════════════════════════════════════════════════════
+    // AUTO-UPGRADE: Custom Select Dropdowns (runs inside DOMContentLoaded)
+    // ═══════════════════════════════════════════════════════════════════
+    document.querySelectorAll('select.input-field').forEach(sel => {
     const wrap = document.createElement('div');
     wrap.className = 'cs-wrap';
     sel.parentNode.insertBefore(wrap, sel);
@@ -1414,6 +1412,7 @@ document.querySelectorAll('select.input-field').forEach(sel => {
             dropdown.classList.remove('show');
             trigger.classList.remove('open');
             sel.dispatchEvent(new Event('change'));
+            updateQR();
         });
         dropdown.appendChild(div);
     });
@@ -1426,11 +1425,10 @@ document.querySelectorAll('select.input-field').forEach(sel => {
         document.querySelectorAll('.cp-panel.show').forEach(p => p.classList.remove('show'));
         if (!isOpen) { dropdown.classList.add('show'); trigger.classList.add('open'); }
     });
-});
 
-// ═══════════════════════════════════════════════════════════════════════════
-// AUTO-UPGRADE: Custom Color Pickers
-// ═══════════════════════════════════════════════════════════════════════════
+    // ═══════════════════════════════════════════════════════════════════
+    // AUTO-UPGRADE: Custom Color Pickers (runs inside DOMContentLoaded)
+    // ═══════════════════════════════════════════════════════════════════
 const CP_SWATCHES = [
     '#000000','#1E293B','#334155','#475569','#64748B','#94A3B8','#CBD5E1','#FFFFFF',
     '#EF4444','#F97316','#F59E0B','#EAB308','#84CC16','#22C55E','#10B981','#14B8A6',
@@ -1475,6 +1473,7 @@ document.querySelectorAll('input[type=color]').forEach(inp => {
         panel.querySelector('.cp-hex-input').value = color;
         panel.querySelectorAll('.cp-color').forEach(s => s.classList.toggle('active', s.dataset.color.toUpperCase() === color.toUpperCase()));
         inp.dispatchEvent(new Event('change'));
+        updateQR();
     }
 
     panel.querySelectorAll('.cp-color').forEach(swatch => {
