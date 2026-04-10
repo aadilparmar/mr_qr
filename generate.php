@@ -69,6 +69,19 @@ textarea.input-field{resize:vertical}
 .color-preset::after{content:'';position:absolute;top:0;right:0;width:50%;height:100%}
 .color-preset[data-tooltip]{position:relative}
 .color-preset[data-tooltip]:hover::after{content:attr(data-tooltip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;white-space:nowrap;z-index:10;width:auto;height:auto;right:auto;top:auto}
+.cust-section{margin-bottom:3px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
+.toggle-label{font-size:12px;font-weight:600;color:var(--text2)}
+.toggle-switch{position:relative;width:36px;height:20px;background:var(--border);border-radius:10px;cursor:pointer;transition:background .2s}
+.toggle-switch.active{background:var(--orange)}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle-switch.active::after{transform:translateX(16px)}
+.gradient-opts{overflow:hidden;max-height:0;transition:max-height .3s ease}
+.gradient-opts.show{max-height:300px}
+.slider-row{display:flex;align-items:center;gap:8px}
+.slider-row input[type=range]{flex:1;accent-color:var(--orange)}
+.slider-val{font-size:11px;font-weight:700;color:var(--orange);min-width:32px;text-align:right}
+.cust-card+.cust-card{margin-top:3px}
 </style>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-5 py-8 lg:py-10">
@@ -205,48 +218,50 @@ textarea.input-field{resize:vertical}
                 </div>
             </div>
 
-            <!-- Customise (collapsible) -->
+            <!-- ═══ Section 1: Color Presets ═══ -->
             <div class="cust-card a-up d3">
                 <div class="cust-head" onclick="toggleCust(this)">
-                    <span class="font-display font-bold text-sm text-neutral-900 flex items-center gap-2">
-                        <i data-lucide="sliders-horizontal" class="w-4 h-4" style="color:var(--orange)"></i> Customise
+                    <span class="font-display font-bold text-sm flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,var(--orange),#F97316)">
+                            <i data-lucide="palette" class="w-3.5 h-3.5 text-white"></i>
+                        </div>
+                        Color Presets
+                        <span class="badge badge-o" style="font-size:9px">8</span>
+                    </span>
+                    <i data-lucide="chevron-down" class="chev open w-4 h-4 text-neutral-400"></i>
+                </div>
+                <div class="cust-body" style="max-height:600px">
+                    <div class="cust-body-inner pt-4 space-y-3">
+                        <div class="color-presets">
+                            <div class="color-preset active-preset" data-tooltip="Classic" data-fg="#000000" data-bg="#FFFFFF" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#000000 50%,#FFFFFF 50%);border-color:var(--orange)"></div>
+                            <div class="color-preset" data-tooltip="Ocean" data-fg="#1B3A5C" data-bg="#E8F4FD" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#1B3A5C 50%,#E8F4FD 50%)"></div>
+                            <div class="color-preset" data-tooltip="Forest" data-fg="#1A5D1A" data-bg="#E8F5E9" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#1A5D1A 50%,#E8F5E9 50%)"></div>
+                            <div class="color-preset" data-tooltip="Royal" data-fg="#4F46E5" data-bg="#EEF2FF" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#4F46E5 50%,#EEF2FF 50%)"></div>
+                            <div class="color-preset" data-tooltip="Sunset" data-fg="#B91C1C" data-bg="#FFF7ED" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#B91C1C 50%,#FFF7ED 50%)"></div>
+                            <div class="color-preset" data-tooltip="Midnight" data-fg="#FFFFFF" data-bg="#1E293B" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#FFFFFF 50%,#1E293B 50%)"></div>
+                            <div class="color-preset" data-tooltip="Coral" data-fg="#FF6B6B" data-bg="#FFF5F5" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#FF6B6B 50%,#FFF5F5 50%)"></div>
+                            <div class="color-preset" data-tooltip="Gold" data-fg="#B8860B" data-bg="#FFFDE7" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#B8860B 50%,#FFFDE7 50%)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Section 2: Dot Style & Color ═══ -->
+            <div class="cust-card">
+                <div class="cust-head" onclick="toggleCust(this)">
+                    <span class="font-display font-bold text-sm flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-orange-500 flex items-center justify-center">
+                            <i data-lucide="circle-dot" class="w-3.5 h-3.5 text-white"></i>
+                        </div>
+                        Dot Style & Color
+                        <span class="badge badge-o" style="font-size:9px">9</span>
                     </span>
                     <i data-lucide="chevron-down" class="chev w-4 h-4 text-neutral-400"></i>
                 </div>
                 <div class="cust-body" style="max-height:0">
-                    <div class="cust-body-inner pt-5 space-y-4">
-                        <!-- Color Presets -->
+                    <div class="cust-body-inner pt-4 space-y-3">
                         <div>
-                            <label class="label">Color Presets</label>
-                            <div class="color-presets">
-                                <div class="color-preset active-preset" data-tooltip="Classic" data-fg="#000000" data-bg="#FFFFFF" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#000000 50%,#FFFFFF 50%);border-color:var(--orange)"></div>
-                                <div class="color-preset" data-tooltip="Ocean" data-fg="#1B3A5C" data-bg="#E8F4FD" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#1B3A5C 50%,#E8F4FD 50%)"></div>
-                                <div class="color-preset" data-tooltip="Forest" data-fg="#1A5D1A" data-bg="#E8F5E9" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#1A5D1A 50%,#E8F5E9 50%)"></div>
-                                <div class="color-preset" data-tooltip="Royal" data-fg="#4F46E5" data-bg="#EEF2FF" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#4F46E5 50%,#EEF2FF 50%)"></div>
-                                <div class="color-preset" data-tooltip="Sunset" data-fg="#B91C1C" data-bg="#FFF7ED" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#B91C1C 50%,#FFF7ED 50%)"></div>
-                                <div class="color-preset" data-tooltip="Midnight" data-fg="#FFFFFF" data-bg="#1E293B" onclick="applyPreset(this)" style="background:linear-gradient(90deg,#FFFFFF 50%,#1E293B 50%)"></div>
-                            </div>
-                        </div>
-                        <!-- 1. Dot Color -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="label">Dot Color</label>
-                                <div class="flex gap-2 items-center">
-                                    <input type="color" id="qr-fg-color" value="#000000" onchange="updateQR()" class="w-10 h-10 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
-                                    <input type="text" id="qr-fg-hex" value="#000000" maxlength="7" class="input-field" style="padding:8px 12px" onchange="document.getElementById('qr-fg-color').value=this.value;updateQR()">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="label">Background</label>
-                                <div class="flex gap-2 items-center">
-                                    <input type="color" id="qr-bg-color" value="#ffffff" onchange="updateQR()" class="w-10 h-10 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
-                                    <input type="text" id="qr-bg-hex" value="#ffffff" maxlength="7" class="input-field" style="padding:8px 12px" onchange="document.getElementById('qr-bg-color').value=this.value;updateQR()">
-                                </div>
-                            </div>
-                        </div>
-                        <!-- 2. Dot Style -->
-                        <div>
-                            <label class="label">Dot Style</label>
+                            <label class="label">Dot Type</label>
                             <select id="qr-dot-type" class="input-field" onchange="updateQR()">
                                 <option value="square">Square</option>
                                 <option value="dots">Dots</option>
@@ -256,96 +271,470 @@ textarea.input-field{resize:vertical}
                                 <option value="classy-rounded">Classy Rounded</option>
                             </select>
                         </div>
-                        <!-- 3. Eye / Corner Shape -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="label">Corner Frame</label>
-                                <select id="qr-corner-square" class="input-field" onchange="updateQR()">
-                                    <option value="">Default</option>
-                                    <option value="dot">Dot</option>
-                                    <option value="square">Square</option>
-                                    <option value="extra-rounded" selected>Rounded</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="label">Corner Dot</label>
-                                <select id="qr-corner-dot" class="input-field" onchange="updateQR()">
-                                    <option value="">Default</option>
-                                    <option value="dot" selected>Dot</option>
-                                    <option value="square">Square</option>
-                                </select>
-                            </div>
-                        </div>
-                        <!-- 4. Eye Color Override -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="label">Corner Frame Color</label>
-                                <div class="flex gap-2 items-center">
-                                    <input type="color" id="qr-corner-sq-color" value="#000000" onchange="updateQR()" class="w-10 h-10 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
-                                    <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="qr-corner-sq-custom" onchange="updateQR()"><span class="text-xs text-neutral-500 font-medium">Custom</span></label>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="label">Corner Dot Color</label>
-                                <div class="flex gap-2 items-center">
-                                    <input type="color" id="qr-corner-dot-color" value="#000000" onchange="updateQR()" class="w-10 h-10 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
-                                    <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="qr-corner-dot-custom" onchange="updateQR()"><span class="text-xs text-neutral-500 font-medium">Custom</span></label>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- 5. Logo / Watermark -->
                         <div>
-                            <label class="label">Logo / Watermark</label>
+                            <label class="label">Dot Color</label>
+                            <div class="flex gap-2 items-center">
+                                <input type="color" id="qr-fg-color" value="#000000" onchange="document.getElementById('qr-fg-hex').value=this.value;updateQR()" class="w-10 h-10 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                                <input type="text" id="qr-fg-hex" value="#000000" maxlength="7" class="input-field" style="padding:8px 12px" onchange="document.getElementById('qr-fg-color').value=this.value;updateQR()">
+                            </div>
+                        </div>
+                        <div class="toggle-row">
+                            <span class="toggle-label">Gradient</span>
+                            <div class="toggle-switch" id="dot-grad-toggle" onclick="toggleSwitch(this);toggleGradient('dot-grad-opts',this.classList.contains('active'));updateQR()"></div>
+                        </div>
+                        <div class="gradient-opts" id="dot-grad-opts">
+                            <div class="space-y-3 pt-2">
+                                <div>
+                                    <label class="label">Gradient Type</label>
+                                    <select id="dot-grad-type" class="input-field" onchange="updateQR()">
+                                        <option value="linear">Linear</option>
+                                        <option value="radial">Radial</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="label">Start Color</label>
+                                        <input type="color" id="dot-grad-start" value="#000000" onchange="updateQR()" class="w-full h-9 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                                    </div>
+                                    <div>
+                                        <label class="label">End Color</label>
+                                        <input type="color" id="dot-grad-end" value="#4F46E5" onchange="updateQR()" class="w-full h-9 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="label">Angle: <span id="dot-grad-angle-val">0</span>&deg;</label>
+                                    <div class="slider-row">
+                                        <input type="range" id="dot-grad-angle" min="0" max="360" value="0" oninput="document.getElementById('dot-grad-angle-val').textContent=this.value;updateQR()">
+                                        <span class="slider-val" id="dot-grad-angle-val2">0&deg;</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Section 3: Background ═══ -->
+            <div class="cust-card">
+                <div class="cust-head" onclick="toggleCust(this)">
+                    <span class="font-display font-bold text-sm flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center">
+                            <i data-lucide="image" class="w-3.5 h-3.5 text-white"></i>
+                        </div>
+                        Background
+                        <span class="badge badge-o" style="font-size:9px">8</span>
+                    </span>
+                    <i data-lucide="chevron-down" class="chev w-4 h-4 text-neutral-400"></i>
+                </div>
+                <div class="cust-body" style="max-height:0">
+                    <div class="cust-body-inner pt-4 space-y-3">
+                        <div>
+                            <label class="label">Background Color</label>
+                            <div class="flex gap-2 items-center">
+                                <input type="color" id="qr-bg-color" value="#ffffff" onchange="document.getElementById('qr-bg-hex').value=this.value;updateQR()" class="w-10 h-10 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                                <input type="text" id="qr-bg-hex" value="#ffffff" maxlength="7" class="input-field" style="padding:8px 12px" onchange="document.getElementById('qr-bg-color').value=this.value;updateQR()">
+                            </div>
+                        </div>
+                        <div class="toggle-row">
+                            <span class="toggle-label">Transparent Background</span>
+                            <div class="toggle-switch" id="bg-transparent-toggle" onclick="toggleSwitch(this);updateQR()"></div>
+                        </div>
+                        <div class="toggle-row">
+                            <span class="toggle-label">Gradient</span>
+                            <div class="toggle-switch" id="bg-grad-toggle" onclick="toggleSwitch(this);toggleGradient('bg-grad-opts',this.classList.contains('active'));updateQR()"></div>
+                        </div>
+                        <div class="gradient-opts" id="bg-grad-opts">
+                            <div class="space-y-3 pt-2">
+                                <div>
+                                    <label class="label">Gradient Type</label>
+                                    <select id="bg-grad-type" class="input-field" onchange="updateQR()">
+                                        <option value="linear">Linear</option>
+                                        <option value="radial">Radial</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="label">Start Color</label>
+                                        <input type="color" id="bg-grad-start" value="#ffffff" onchange="updateQR()" class="w-full h-9 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                                    </div>
+                                    <div>
+                                        <label class="label">End Color</label>
+                                        <input type="color" id="bg-grad-end" value="#EEF2FF" onchange="updateQR()" class="w-full h-9 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="label">Angle: <span id="bg-grad-angle-val">0</span>&deg;</label>
+                                    <div class="slider-row">
+                                        <input type="range" id="bg-grad-angle" min="0" max="360" value="0" oninput="document.getElementById('bg-grad-angle-val').textContent=this.value;updateQR()">
+                                        <span class="slider-val">0&deg;</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="toggle-row">
+                            <span class="toggle-label">Rounded Background</span>
+                            <div class="toggle-switch" id="bg-rounded-toggle" onclick="toggleSwitch(this);updateQR()"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Section 4: Eye Frame (Corner Squares) ═══ -->
+            <div class="cust-card">
+                <div class="cust-head" onclick="toggleCust(this)">
+                    <span class="font-display font-bold text-sm flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-purple-500 flex items-center justify-center">
+                            <i data-lucide="scan" class="w-3.5 h-3.5 text-white"></i>
+                        </div>
+                        Eye Frame
+                        <span class="badge badge-o" style="font-size:9px">7</span>
+                    </span>
+                    <i data-lucide="chevron-down" class="chev w-4 h-4 text-neutral-400"></i>
+                </div>
+                <div class="cust-body" style="max-height:0">
+                    <div class="cust-body-inner pt-4 space-y-3">
+                        <div>
+                            <label class="label">Frame Style</label>
+                            <select id="qr-corner-square" class="input-field" onchange="updateQR()">
+                                <option value="">Default</option>
+                                <option value="dot">Dot</option>
+                                <option value="square">Square</option>
+                                <option value="extra-rounded" selected>Rounded</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="label">Frame Color</label>
+                            <div class="flex gap-2 items-center">
+                                <input type="color" id="qr-corner-sq-color" value="#000000" onchange="updateQR()" class="w-10 h-10 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="qr-corner-sq-custom" onchange="updateQR()" style="accent-color:var(--orange)"><span class="text-xs text-neutral-500 font-medium">Custom color</span></label>
+                            </div>
+                        </div>
+                        <div class="toggle-row">
+                            <span class="toggle-label">Gradient</span>
+                            <div class="toggle-switch" id="csq-grad-toggle" onclick="toggleSwitch(this);toggleGradient('csq-grad-opts',this.classList.contains('active'));updateQR()"></div>
+                        </div>
+                        <div class="gradient-opts" id="csq-grad-opts">
+                            <div class="space-y-3 pt-2">
+                                <div>
+                                    <label class="label">Gradient Type</label>
+                                    <select id="csq-grad-type" class="input-field" onchange="updateQR()">
+                                        <option value="linear">Linear</option>
+                                        <option value="radial">Radial</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="label">Start Color</label>
+                                        <input type="color" id="csq-grad-start" value="#4F46E5" onchange="updateQR()" class="w-full h-9 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                                    </div>
+                                    <div>
+                                        <label class="label">End Color</label>
+                                        <input type="color" id="csq-grad-end" value="#7C3AED" onchange="updateQR()" class="w-full h-9 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="label">Angle: <span id="csq-grad-angle-val">0</span>&deg;</label>
+                                    <div class="slider-row">
+                                        <input type="range" id="csq-grad-angle" min="0" max="360" value="0" oninput="document.getElementById('csq-grad-angle-val').textContent=this.value;updateQR()">
+                                        <span class="slider-val">0&deg;</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Section 5: Eye Dot (Corner Dots) ═══ -->
+            <div class="cust-card">
+                <div class="cust-head" onclick="toggleCust(this)">
+                    <span class="font-display font-bold text-sm flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-rose-500 flex items-center justify-center">
+                            <i data-lucide="focus" class="w-3.5 h-3.5 text-white"></i>
+                        </div>
+                        Eye Dot
+                        <span class="badge badge-o" style="font-size:9px">7</span>
+                    </span>
+                    <i data-lucide="chevron-down" class="chev w-4 h-4 text-neutral-400"></i>
+                </div>
+                <div class="cust-body" style="max-height:0">
+                    <div class="cust-body-inner pt-4 space-y-3">
+                        <div>
+                            <label class="label">Dot Style</label>
+                            <select id="qr-corner-dot" class="input-field" onchange="updateQR()">
+                                <option value="">Default</option>
+                                <option value="dot" selected>Dot</option>
+                                <option value="square">Square</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="label">Dot Color</label>
+                            <div class="flex gap-2 items-center">
+                                <input type="color" id="qr-corner-dot-color" value="#000000" onchange="updateQR()" class="w-10 h-10 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="qr-corner-dot-custom" onchange="updateQR()" style="accent-color:var(--orange)"><span class="text-xs text-neutral-500 font-medium">Custom color</span></label>
+                            </div>
+                        </div>
+                        <div class="toggle-row">
+                            <span class="toggle-label">Gradient</span>
+                            <div class="toggle-switch" id="cd-grad-toggle" onclick="toggleSwitch(this);toggleGradient('cd-grad-opts',this.classList.contains('active'));updateQR()"></div>
+                        </div>
+                        <div class="gradient-opts" id="cd-grad-opts">
+                            <div class="space-y-3 pt-2">
+                                <div>
+                                    <label class="label">Gradient Type</label>
+                                    <select id="cd-grad-type" class="input-field" onchange="updateQR()">
+                                        <option value="linear">Linear</option>
+                                        <option value="radial">Radial</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="label">Start Color</label>
+                                        <input type="color" id="cd-grad-start" value="#F43F5E" onchange="updateQR()" class="w-full h-9 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                                    </div>
+                                    <div>
+                                        <label class="label">End Color</label>
+                                        <input type="color" id="cd-grad-end" value="#EC4899" onchange="updateQR()" class="w-full h-9 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="label">Angle: <span id="cd-grad-angle-val">0</span>&deg;</label>
+                                    <div class="slider-row">
+                                        <input type="range" id="cd-grad-angle" min="0" max="360" value="0" oninput="document.getElementById('cd-grad-angle-val').textContent=this.value;updateQR()">
+                                        <span class="slider-val">0&deg;</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Section 6: Logo / Watermark ═══ -->
+            <div class="cust-card">
+                <div class="cust-head" onclick="toggleCust(this)">
+                    <span class="font-display font-bold text-sm flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:#10B981">
+                            <i data-lucide="image-plus" class="w-3.5 h-3.5 text-white"></i>
+                        </div>
+                        Logo / Watermark
+                        <span class="badge badge-o" style="font-size:9px">5</span>
+                    </span>
+                    <i data-lucide="chevron-down" class="chev w-4 h-4 text-neutral-400"></i>
+                </div>
+                <div class="cust-body" style="max-height:0">
+                    <div class="cust-body-inner pt-4 space-y-3">
+                        <div>
+                            <label class="label">Upload Logo</label>
                             <div class="flex gap-2 items-center">
                                 <input type="file" id="qr-logo-file" accept="image/*" onchange="handleLogo(this)" class="input-field" style="padding:8px 12px;font-size:12px">
                                 <button type="button" onclick="clearLogo()" class="btn btn-sm btn-s" style="flex-shrink:0;padding:8px 12px">
                                     <i data-lucide="x" style="width:12px;height:12px"></i>
                                 </button>
                             </div>
-                            <div class="grid grid-cols-2 gap-4 mt-3">
-                                <div>
-                                    <label class="label">Logo Size: <span id="logo-size-val">30</span>%</label>
-                                    <input type="range" id="qr-logo-size" min="10" max="50" value="30" oninput="document.getElementById('logo-size-val').textContent=this.value;updateQR()" class="w-full" style="accent-color:var(--orange)">
-                                </div>
-                                <div>
-                                    <label class="label">Logo Margin: <span id="logo-margin-val">5</span>px</label>
-                                    <input type="range" id="qr-logo-margin" min="0" max="20" value="5" oninput="document.getElementById('logo-margin-val').textContent=this.value;updateQR()" class="w-full" style="accent-color:var(--orange)">
-                                </div>
-                            </div>
-                            <label class="flex items-center gap-2 mt-2 cursor-pointer">
-                                <input type="checkbox" id="qr-logo-hide-dots" checked onchange="updateQR()" style="accent-color:var(--orange)">
-                                <span class="text-xs text-neutral-500 font-medium">Hide dots behind logo</span>
-                            </label>
                         </div>
-                        <!-- 6. Quiet Zone -->
                         <div>
-                            <label class="label">Quiet Zone (Margin): <span id="margin-val">10</span>px</label>
-                            <input type="range" id="qr-margin" min="0" max="30" value="10" oninput="document.getElementById('margin-val').textContent=this.value;updateQR()" class="w-full" style="accent-color:var(--orange)">
-                        </div>
-                        <!-- 7. Size & Error Correction -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="label">Export Size</label>
-                                <select id="qr-size" class="input-field" onchange="updateQR()">
-                                    <option value="256">256 × 256</option>
-                                    <option value="512">512 × 512</option>
-                                    <option value="1024" selected>1024 × 1024</option>
-                                    <option value="2048">2048 × 2048</option>
-                                </select>
+                            <label class="label">Logo Size: <span id="logo-size-val">30</span>%</label>
+                            <div class="slider-row">
+                                <input type="range" id="qr-logo-size" min="10" max="50" value="30" oninput="document.getElementById('logo-size-val').textContent=this.value;updateQR()">
+                                <span class="slider-val">30%</span>
                             </div>
-                            <div>
-                                <label class="label">Error Correction</label>
-                                <select id="qr-ec" class="input-field" onchange="updateQR()">
-                                    <option value="L">Low (7%)</option>
-                                    <option value="M">Medium (15%)</option>
-                                    <option value="Q">Quartile (25%)</option>
-                                    <option value="H" selected>High (30%)</option>
-                                </select>
+                        </div>
+                        <div>
+                            <label class="label">Logo Margin: <span id="logo-margin-val">5</span>px</label>
+                            <div class="slider-row">
+                                <input type="range" id="qr-logo-margin" min="0" max="20" value="5" oninput="document.getElementById('logo-margin-val').textContent=this.value;updateQR()">
+                                <span class="slider-val">5px</span>
+                            </div>
+                        </div>
+                        <div class="toggle-row">
+                            <span class="toggle-label">Hide Dots Behind Logo</span>
+                            <div class="toggle-switch active" id="logo-hide-dots-toggle" onclick="toggleSwitch(this);updateQR()"></div>
+                        </div>
+                        <input type="hidden" id="qr-logo-hide-dots" value="1">
+                        <div>
+                            <label class="label">Logo Opacity: <span id="logo-opacity-val">1.0</span></label>
+                            <div class="slider-row">
+                                <input type="range" id="qr-logo-opacity" min="0.1" max="1" step="0.1" value="1" oninput="document.getElementById('logo-opacity-val').textContent=parseFloat(this.value).toFixed(1);updateQR()">
+                                <span class="slider-val">1.0</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- ═══ Section 7: Frame & Label ═══ -->
+            <div class="cust-card">
+                <div class="cust-head" onclick="toggleCust(this)">
+                    <span class="font-display font-bold text-sm flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-amber-500 flex items-center justify-center">
+                            <i data-lucide="frame" class="w-3.5 h-3.5 text-white"></i>
+                        </div>
+                        Frame & Label
+                        <span class="badge badge-o" style="font-size:9px">8</span>
+                    </span>
+                    <i data-lucide="chevron-down" class="chev w-4 h-4 text-neutral-400"></i>
+                </div>
+                <div class="cust-body" style="max-height:0">
+                    <div class="cust-body-inner pt-4 space-y-3">
+                        <div class="toggle-row">
+                            <span class="toggle-label">Enable Frame</span>
+                            <div class="toggle-switch" id="frame-enable-toggle" onclick="toggleSwitch(this);applyFrameShadowCSS();updateQR()"></div>
+                        </div>
+                        <input type="hidden" id="frame-enable" value="0">
+                        <div id="frame-opts" style="display:none" class="space-y-3">
+                            <div>
+                                <label class="label">Frame Color</label>
+                                <input type="color" id="frame-color" value="#000000" onchange="applyFrameShadowCSS()" class="w-full h-9 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                            </div>
+                            <div>
+                                <label class="label">Frame Width: <span id="frame-width-val">4</span>px</label>
+                                <div class="slider-row">
+                                    <input type="range" id="frame-width" min="2" max="15" value="4" oninput="document.getElementById('frame-width-val').textContent=this.value;applyFrameShadowCSS()">
+                                    <span class="slider-val">4px</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="label">Frame Padding: <span id="frame-padding-val">15</span>px</label>
+                                <div class="slider-row">
+                                    <input type="range" id="frame-padding" min="5" max="40" value="15" oninput="document.getElementById('frame-padding-val').textContent=this.value;applyFrameShadowCSS()">
+                                    <span class="slider-val">15px</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="label">Border Radius: <span id="frame-radius-val">12</span>px</label>
+                                <div class="slider-row">
+                                    <input type="range" id="frame-radius" min="0" max="30" value="12" oninput="document.getElementById('frame-radius-val').textContent=this.value;applyFrameShadowCSS()">
+                                    <span class="slider-val">12px</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="label">Label Text</label>
+                                <input type="text" id="frame-label" class="input-field" placeholder="Scan Me!" oninput="applyFrameShadowCSS()">
+                            </div>
+                            <div>
+                                <label class="label">Label Color</label>
+                                <input type="color" id="frame-label-color" value="#ffffff" onchange="applyFrameShadowCSS()" class="w-full h-9 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                            </div>
+                            <div>
+                                <label class="label">Label Font Size: <span id="frame-label-size-val">14</span>px</label>
+                                <div class="slider-row">
+                                    <input type="range" id="frame-label-size" min="10" max="24" value="14" oninput="document.getElementById('frame-label-size-val').textContent=this.value;applyFrameShadowCSS()">
+                                    <span class="slider-val">14px</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Section 8: Shadow & Effects ═══ -->
+            <div class="cust-card">
+                <div class="cust-head" onclick="toggleCust(this)">
+                    <span class="font-display font-bold text-sm flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-violet-500 flex items-center justify-center">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-white"></i>
+                        </div>
+                        Shadow & Effects
+                        <span class="badge badge-o" style="font-size:9px">5</span>
+                    </span>
+                    <i data-lucide="chevron-down" class="chev w-4 h-4 text-neutral-400"></i>
+                </div>
+                <div class="cust-body" style="max-height:0">
+                    <div class="cust-body-inner pt-4 space-y-3">
+                        <div class="toggle-row">
+                            <span class="toggle-label">Enable Shadow</span>
+                            <div class="toggle-switch" id="shadow-enable-toggle" onclick="toggleSwitch(this);applyFrameShadowCSS()"></div>
+                        </div>
+                        <input type="hidden" id="shadow-enable" value="0">
+                        <div id="shadow-opts" style="display:none" class="space-y-3">
+                            <div>
+                                <label class="label">Shadow Color</label>
+                                <input type="color" id="shadow-color" value="#000000" onchange="applyFrameShadowCSS()" class="w-full h-9 rounded-lg border border-neutral-200 cursor-pointer p-0.5">
+                            </div>
+                            <div>
+                                <label class="label">Shadow Blur: <span id="shadow-blur-val">10</span>px</label>
+                                <div class="slider-row">
+                                    <input type="range" id="shadow-blur" min="0" max="30" value="10" oninput="document.getElementById('shadow-blur-val').textContent=this.value;applyFrameShadowCSS()">
+                                    <span class="slider-val">10px</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="label">Offset X: <span id="shadow-ox-val">0</span>px</label>
+                                <div class="slider-row">
+                                    <input type="range" id="shadow-ox" min="-10" max="10" value="0" oninput="document.getElementById('shadow-ox-val').textContent=this.value;applyFrameShadowCSS()">
+                                    <span class="slider-val">0px</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="label">Offset Y: <span id="shadow-oy-val">4</span>px</label>
+                                <div class="slider-row">
+                                    <input type="range" id="shadow-oy" min="0" max="15" value="4" oninput="document.getElementById('shadow-oy-val').textContent=this.value;applyFrameShadowCSS()">
+                                    <span class="slider-val">4px</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Section 9: Size & Export ═══ -->
+            <div class="cust-card">
+                <div class="cust-head" onclick="toggleCust(this)">
+                    <span class="font-display font-bold text-sm flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-teal-500 flex items-center justify-center">
+                            <i data-lucide="ruler" class="w-3.5 h-3.5 text-white"></i>
+                        </div>
+                        Size & Export
+                        <span class="badge badge-o" style="font-size:9px">5</span>
+                    </span>
+                    <i data-lucide="chevron-down" class="chev w-4 h-4 text-neutral-400"></i>
+                </div>
+                <div class="cust-body" style="max-height:0">
+                    <div class="cust-body-inner pt-4 space-y-3">
+                        <div>
+                            <label class="label">QR Shape</label>
+                            <select id="qr-shape" class="input-field" onchange="updateQR()">
+                                <option value="square" selected>Square</option>
+                                <option value="circle">Circle</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="label">Export Size</label>
+                            <select id="qr-size" class="input-field" onchange="updateQR()">
+                                <option value="256">256 &times; 256</option>
+                                <option value="512">512 &times; 512</option>
+                                <option value="1024" selected>1024 &times; 1024</option>
+                                <option value="2048">2048 &times; 2048</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="label">Error Correction</label>
+                            <select id="qr-ec" class="input-field" onchange="updateQR()">
+                                <option value="L">Low (7%)</option>
+                                <option value="M">Medium (15%)</option>
+                                <option value="Q">Quartile (25%)</option>
+                                <option value="H" selected>High (30%)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="label">Quiet Zone: <span id="margin-val">10</span>px</label>
+                            <div class="slider-row">
+                                <input type="range" id="qr-margin" min="0" max="40" value="10" oninput="document.getElementById('margin-val').textContent=this.value;updateQR()">
+                                <span class="slider-val">10px</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="label">Export Format</label>
+                            <select id="qr-export-fmt" class="input-field">
+                                <option value="png" selected>PNG</option>
+                                <option value="svg">SVG</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- RIGHT: Preview + Download -->
@@ -436,12 +825,17 @@ textarea.input-field{resize:vertical}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script>
+/* ═══════════════════════════════════════════════════════════════════
+   QR Code Pro — Advanced Customisation Engine (62 controls)
+   ═══════════════════════════════════════════════════════════════════ */
 let qrInstance = null;
 let logoDataUrl = '';
 let debounceTimer = null;
 const currentType = '<?= $selectedType ?>';
 
+/* ── getQRContent (all 23 types — UNCHANGED) ──────────────────────── */
 function getQRContent() {
     switch (currentType) {
         case 'url':       return document.getElementById('qr-url')?.value||'';
@@ -471,49 +865,103 @@ function getQRContent() {
     }
 }
 
-function getQROptions() {
-    const fg = document.getElementById('qr-fg-color').value;
-    const bg = document.getElementById('qr-bg-color').value;
-    const ec = document.getElementById('qr-ec').value;
-    const dotType = document.getElementById('qr-dot-type').value;
-    const cornerSq = document.getElementById('qr-corner-square').value;
-    const cornerDot = document.getElementById('qr-corner-dot').value;
-    const margin = parseInt(document.getElementById('qr-margin').value);
+/* ── Helper: build gradient object for qr-code-styling ────────────── */
+function buildGradient(typeId, startId, endId, angleId) {
+    return {
+        type: document.getElementById(typeId).value,
+        rotation: parseInt(document.getElementById(angleId).value) * Math.PI / 180,
+        colorStops: [
+            { offset: 0, color: document.getElementById(startId).value },
+            { offset: 1, color: document.getElementById(endId).value }
+        ]
+    };
+}
 
+/* ── getQROptions — reads ALL 62 controls ─────────────────────────── */
+function getQROptions() {
+    const fg      = document.getElementById('qr-fg-color').value;
+    const bg      = document.getElementById('qr-bg-color').value;
+    const ec      = document.getElementById('qr-ec').value;
+    const dotType = document.getElementById('qr-dot-type').value;
+    const cornerSq  = document.getElementById('qr-corner-square').value;
+    const cornerDot = document.getElementById('qr-corner-dot').value;
+    const margin    = parseInt(document.getElementById('qr-margin').value);
+    const shape     = document.getElementById('qr-shape').value;
+
+    // Sync hex displays
     document.getElementById('qr-fg-hex').value = fg;
     document.getElementById('qr-bg-hex').value = bg;
 
     const opts = {
         width: 300, height: 300, margin: margin,
         data: getQRContent(),
+        type: shape === 'circle' ? 'canvas' : 'canvas',
+        shape: shape === 'circle' ? 'circle' : 'square',
         qrOptions: { errorCorrectionLevel: ec },
         dotsOptions: { type: dotType, color: fg },
         backgroundOptions: { color: bg },
     };
 
-    // Corner frame
+    // Dot gradient
+    if (document.getElementById('dot-grad-toggle').classList.contains('active')) {
+        opts.dotsOptions.gradient = buildGradient('dot-grad-type', 'dot-grad-start', 'dot-grad-end', 'dot-grad-angle');
+        delete opts.dotsOptions.color;
+    }
+
+    // Background transparent
+    if (document.getElementById('bg-transparent-toggle').classList.contains('active')) {
+        opts.backgroundOptions.color = 'transparent';
+    }
+
+    // Background gradient
+    if (document.getElementById('bg-grad-toggle').classList.contains('active')) {
+        opts.backgroundOptions.gradient = buildGradient('bg-grad-type', 'bg-grad-start', 'bg-grad-end', 'bg-grad-angle');
+        if (!document.getElementById('bg-transparent-toggle').classList.contains('active')) {
+            delete opts.backgroundOptions.color;
+        }
+    }
+
+    // Rounded background
+    if (document.getElementById('bg-rounded-toggle').classList.contains('active')) {
+        opts.backgroundOptions.round = 0.2;
+    }
+
+    // Corner frame (corner squares)
     if (cornerSq) {
         opts.cornersSquareOptions = { type: cornerSq };
-        if (document.getElementById('qr-corner-sq-custom').checked)
+        if (document.getElementById('qr-corner-sq-custom').checked) {
             opts.cornersSquareOptions.color = document.getElementById('qr-corner-sq-color').value;
-        else
+        } else {
             opts.cornersSquareOptions.color = fg;
+        }
+        // Corner square gradient
+        if (document.getElementById('csq-grad-toggle').classList.contains('active')) {
+            opts.cornersSquareOptions.gradient = buildGradient('csq-grad-type', 'csq-grad-start', 'csq-grad-end', 'csq-grad-angle');
+            delete opts.cornersSquareOptions.color;
+        }
     }
 
     // Corner dot
     if (cornerDot) {
         opts.cornersDotOptions = { type: cornerDot };
-        if (document.getElementById('qr-corner-dot-custom').checked)
+        if (document.getElementById('qr-corner-dot-custom').checked) {
             opts.cornersDotOptions.color = document.getElementById('qr-corner-dot-color').value;
-        else
+        } else {
             opts.cornersDotOptions.color = fg;
+        }
+        // Corner dot gradient
+        if (document.getElementById('cd-grad-toggle').classList.contains('active')) {
+            opts.cornersDotOptions.gradient = buildGradient('cd-grad-type', 'cd-grad-start', 'cd-grad-end', 'cd-grad-angle');
+            delete opts.cornersDotOptions.color;
+        }
     }
 
     // Logo
     if (logoDataUrl) {
+        const hideDots = document.getElementById('logo-hide-dots-toggle').classList.contains('active');
         opts.image = logoDataUrl;
         opts.imageOptions = {
-            hideBackgroundDots: document.getElementById('qr-logo-hide-dots').checked,
+            hideBackgroundDots: hideDots,
             imageSize: parseInt(document.getElementById('qr-logo-size').value) / 100,
             margin: parseInt(document.getElementById('qr-logo-margin').value),
         };
@@ -522,6 +970,7 @@ function getQROptions() {
     return opts;
 }
 
+/* ── Debounced QR update ──────────────────────────────────────────── */
 function updateQR() {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(_doUpdateQR, 160);
@@ -541,7 +990,7 @@ function _doUpdateQR() {
         container.style.display = 'none';
         placeholder.style.display = 'flex';
         wrapper.classList.remove('has-qr');
-        btns.forEach(b => document.getElementById(b).disabled = true);
+        btns.forEach(b => { const el = document.getElementById(b); if (el) el.disabled = true; });
         qrInstance = null;
         return;
     }
@@ -550,31 +999,199 @@ function _doUpdateQR() {
     placeholder.style.display = 'none';
     wrapper.classList.add('has-qr');
     container.innerHTML = '';
-    container.style.backgroundColor = bg;
-    btns.forEach(b => document.getElementById(b).disabled = false);
+
+    const isTrans = document.getElementById('bg-transparent-toggle').classList.contains('active');
+    container.style.backgroundColor = isTrans ? 'transparent' : bg;
+
+    btns.forEach(b => { const el = document.getElementById(b); if (el) el.disabled = false; });
 
     const opts = getQROptions();
     qrInstance = new QRCodeStyling(opts);
     qrInstance.append(container);
+
+    // Apply live frame/shadow CSS preview
+    applyFrameShadowCSS();
 }
 
+/* ── Frame & Shadow live CSS preview ──────────────────────────────── */
+function applyFrameShadowCSS() {
+    const wrapper = document.getElementById('qr-wrapper');
+    if (!wrapper) return;
+
+    const frameOn  = document.getElementById('frame-enable-toggle').classList.contains('active');
+    const shadowOn = document.getElementById('shadow-enable-toggle').classList.contains('active');
+
+    // Update hidden fields
+    document.getElementById('frame-enable').value  = frameOn ? '1' : '0';
+    document.getElementById('shadow-enable').value = shadowOn ? '1' : '0';
+
+    // Show/hide option panels
+    document.getElementById('frame-opts').style.display  = frameOn ? 'block' : 'none';
+    document.getElementById('shadow-opts').style.display = shadowOn ? 'block' : 'none';
+
+    // Frame CSS
+    if (frameOn) {
+        const fw = document.getElementById('frame-width').value + 'px';
+        const fp = document.getElementById('frame-padding').value + 'px';
+        const fr = document.getElementById('frame-radius').value + 'px';
+        const fc = document.getElementById('frame-color').value;
+        wrapper.style.border = fw + ' solid ' + fc;
+        wrapper.style.padding = fp;
+        wrapper.style.borderRadius = fr;
+    } else {
+        wrapper.style.border = '1.5px solid var(--border)';
+        wrapper.style.padding = '20px';
+        wrapper.style.borderRadius = '18px';
+    }
+
+    // Shadow CSS
+    if (shadowOn) {
+        const sc = document.getElementById('shadow-color').value;
+        const sb = document.getElementById('shadow-blur').value;
+        const sox = document.getElementById('shadow-ox').value;
+        const soy = document.getElementById('shadow-oy').value;
+        // Convert hex to rgba for shadow
+        const r = parseInt(sc.slice(1,3),16), g = parseInt(sc.slice(3,5),16), b = parseInt(sc.slice(5,7),16);
+        wrapper.style.boxShadow = `${sox}px ${soy}px ${sb}px rgba(${r},${g},${b},0.35)`;
+    } else {
+        wrapper.style.boxShadow = wrapper.classList.contains('has-qr') ? '0 6px 32px rgba(0,0,0,.1)' : 'none';
+    }
+
+    // Label preview: show small text below QR
+    const labelText = document.getElementById('frame-label')?.value || '';
+    let labelEl = document.getElementById('qr-frame-label-preview');
+    if (frameOn && labelText) {
+        if (!labelEl) {
+            labelEl = document.createElement('div');
+            labelEl.id = 'qr-frame-label-preview';
+            labelEl.style.cssText = 'text-align:center;font-weight:700;font-family:"Plus Jakarta Sans",sans-serif;margin-top:8px;';
+            wrapper.appendChild(labelEl);
+        }
+        labelEl.textContent = labelText;
+        labelEl.style.color = document.getElementById('frame-label-color').value;
+        labelEl.style.fontSize = document.getElementById('frame-label-size').value + 'px';
+    } else if (labelEl) {
+        labelEl.remove();
+    }
+}
+
+/* ── Canvas compositing for export (frame + shadow + label) ───────── */
+function roundRect(ctx, x, y, w, h, r) {
+    r = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+}
+
+function compositeExport(qrCanvas) {
+    const frameEnabled  = document.getElementById('frame-enable-toggle').classList.contains('active');
+    const shadowEnabled = document.getElementById('shadow-enable-toggle').classList.contains('active');
+    const labelText     = document.getElementById('frame-label')?.value || '';
+
+    if (!frameEnabled && !shadowEnabled && !labelText) return qrCanvas;
+
+    const frameWidth   = frameEnabled ? parseInt(document.getElementById('frame-width').value) : 0;
+    const framePadding = frameEnabled ? parseInt(document.getElementById('frame-padding').value) : 0;
+    const labelHeight  = (frameEnabled && labelText) ? parseInt(document.getElementById('frame-label-size').value) + 20 : 0;
+    const shadowBlur   = shadowEnabled ? parseInt(document.getElementById('shadow-blur').value) : 0;
+    const totalPadding = frameWidth + framePadding + shadowBlur + 10;
+
+    const w = qrCanvas.width + totalPadding * 2;
+    const h = qrCanvas.height + totalPadding * 2 + labelHeight;
+
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const ctx = c.getContext('2d');
+
+    // Transparent bg first
+    ctx.clearRect(0, 0, w, h);
+
+    // Shadow
+    if (shadowEnabled) {
+        ctx.shadowColor = document.getElementById('shadow-color').value + '59';
+        ctx.shadowBlur = shadowBlur;
+        ctx.shadowOffsetX = parseInt(document.getElementById('shadow-ox').value);
+        ctx.shadowOffsetY = parseInt(document.getElementById('shadow-oy').value);
+    }
+
+    // Frame background rect
+    if (frameEnabled) {
+        const radius = parseInt(document.getElementById('frame-radius').value);
+        ctx.fillStyle = document.getElementById('frame-color').value;
+        roundRect(ctx,
+            totalPadding - frameWidth - framePadding,
+            totalPadding - frameWidth - framePadding,
+            qrCanvas.width + (frameWidth + framePadding) * 2,
+            qrCanvas.height + (frameWidth + framePadding) * 2 + labelHeight,
+            radius);
+        ctx.fill();
+    }
+
+    // Reset shadow
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
+    // Draw QR
+    ctx.drawImage(qrCanvas, totalPadding, totalPadding);
+
+    // Label
+    if (frameEnabled && labelText) {
+        const labelSize = parseInt(document.getElementById('frame-label-size').value);
+        ctx.font = `bold ${labelSize}px 'Plus Jakarta Sans', sans-serif`;
+        ctx.fillStyle = document.getElementById('frame-label-color').value;
+        ctx.textAlign = 'center';
+        ctx.fillText(labelText, w / 2, totalPadding + qrCanvas.height + framePadding + labelSize + 5);
+    }
+
+    return c;
+}
+
+/* ── Download (PNG/SVG) with compositing ──────────────────────────── */
 function downloadQR(fmt) {
     if (!qrInstance) return;
     const s = parseInt(document.getElementById('qr-size').value);
-    // Re-render at export size
     const opts = getQROptions();
     opts.width = s; opts.height = s;
+
     const exportQR = new QRCodeStyling(opts);
     const tmp = document.createElement('div');
     tmp.style.cssText = 'position:absolute;left:-9999px';
     document.body.appendChild(tmp);
     exportQR.append(tmp);
+
     setTimeout(() => {
-        exportQR.download({ name: `qrcode_${currentType}_${Date.now()}`, extension: fmt === 'svg' ? 'svg' : 'png' });
+        const fname = `qrcode_${currentType}_${Date.now()}`;
+
+        if (fmt === 'svg') {
+            exportQR.download({ name: fname, extension: 'svg' });
+            document.body.removeChild(tmp);
+            return;
+        }
+
+        // PNG with compositing
+        const cv = tmp.querySelector('canvas');
+        if (!cv) { exportQR.download({ name: fname, extension: 'png' }); document.body.removeChild(tmp); return; }
+
+        const finalCanvas = compositeExport(cv);
+        const link = document.createElement('a');
+        link.download = fname + '.png';
+        link.href = finalCanvas.toDataURL('image/png');
+        link.click();
         document.body.removeChild(tmp);
-    }, 300);
+    }, 350);
 }
 
+/* ── Logo handling ────────────────────────────────────────────────── */
 function handleLogo(input) {
     const file = input.files[0];
     if (!file) return;
@@ -589,6 +1206,7 @@ function clearLogo() {
     updateQR();
 }
 
+/* ── Save to database ─────────────────────────────────────────────── */
 function saveQRToDB() {
     const c = getQRContent(); if (!c) return;
     document.getElementById('form-qr-title').value   = document.getElementById('qr-save-title').value || '<?= addslashes($types[$selectedType]['name']) ?>';
@@ -600,24 +1218,23 @@ function saveQRToDB() {
     document.getElementById('save-form').submit();
 }
 
+/* ── Print QR ─────────────────────────────────────────────────────── */
 function printQR() {
     const cv = document.querySelector('#qr-code canvas'); if (!cv) return;
-    const w  = window.open('','_blank');
-    w.document.write(`<html><head><title>QR Code - ${currentType}</title></head><body style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#fff;font-family:sans-serif;"><h2 style="margin-bottom:20px;color:#333">${document.getElementById('qr-save-title').value||currentType+' QR Code'}</h2><img src="${cv.toDataURL()}" style="max-width:400px;"><p style="margin-top:16px;color:#999;font-size:12px">Generated by QRCode Pro</p></body></html>`);
+    const finalCanvas = compositeExport(cv);
+    const w = window.open('','_blank');
+    w.document.write(`<html><head><title>QR Code - ${currentType}</title></head><body style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#fff;font-family:sans-serif;"><h2 style="margin-bottom:20px;color:#333">${document.getElementById('qr-save-title').value||currentType+' QR Code'}</h2><img src="${finalCanvas.toDataURL()}" style="max-width:400px;"><p style="margin-top:16px;color:#999;font-size:12px">Generated by QRCode Pro</p></body></html>`);
     w.document.close(); w.onload = () => { w.print(); };
 }
 
-function toggleCust(head) {
-    const body = head.nextElementSibling, chev = head.querySelector('.chev');
-    const isOpen = body.style.maxHeight !== '0px' && body.style.maxHeight !== '';
-    body.style.maxHeight = isOpen ? '0px' : body.scrollHeight + 'px';
-    chev.classList.toggle('open', !isOpen);
-    if (!isOpen) setTimeout(() => { body.style.maxHeight = body.scrollHeight + 50 + 'px'; }, 380);
-}
-
+/* ── Copy to clipboard ────────────────────────────────────────────── */
 function copyQR() {
     if (!qrInstance) return;
-    qrInstance.getRawData('png').then(blob => {
+    const cv = document.querySelector('#qr-code canvas');
+    if (!cv) return;
+    const finalCanvas = compositeExport(cv);
+    finalCanvas.toBlob(blob => {
+        if (!blob) return;
         navigator.clipboard.write([new ClipboardItem({'image/png': blob})]).then(() => {
             const btn = document.getElementById('btn-copy');
             const orig = btn.innerHTML;
@@ -625,9 +1242,10 @@ function copyQR() {
             lucide.createIcons();
             setTimeout(() => { btn.innerHTML = orig; lucide.createIcons(); }, 2000);
         });
-    });
+    }, 'image/png');
 }
 
+/* ── PDF export (jsPDF) with compositing ──────────────────────────── */
 function downloadPDF() {
     if (!qrInstance) return;
     const s = parseInt(document.getElementById('qr-size').value);
@@ -641,6 +1259,7 @@ function downloadPDF() {
     setTimeout(() => {
         const cv = tmp.querySelector('canvas');
         if (!cv) { document.body.removeChild(tmp); return; }
+        const finalCanvas = compositeExport(cv);
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const title = document.getElementById('qr-save-title').value || currentType + ' QR Code';
@@ -648,7 +1267,7 @@ function downloadPDF() {
         doc.text(title, 105, 30, {align:'center'});
         doc.setFont('helvetica','normal'); doc.setFontSize(10);
         doc.text('Generated by QRCode Pro', 105, 38, {align:'center'});
-        const imgData = cv.toDataURL('image/png');
+        const imgData = finalCanvas.toDataURL('image/png');
         const qrSize = 100;
         doc.addImage(imgData, 'PNG', (210-qrSize)/2, 50, qrSize, qrSize);
         doc.setFontSize(8); doc.setTextColor(150);
@@ -658,6 +1277,7 @@ function downloadPDF() {
     }, 400);
 }
 
+/* ── Color preset ─────────────────────────────────────────────────── */
 function applyPreset(el) {
     document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('active-preset'));
     el.classList.add('active-preset');
@@ -670,9 +1290,52 @@ function applyPreset(el) {
     updateQR();
 }
 
-document.addEventListener('DOMContentLoaded', () => { lucide.createIcons(); });
-</script>
+/* ── Accordion toggle ─────────────────────────────────────────────── */
+function toggleCust(head) {
+    const body = head.nextElementSibling;
+    const chev = head.querySelector('.chev');
+    const isOpen = body.style.maxHeight !== '0px' && body.style.maxHeight !== '' && body.style.maxHeight !== '0';
+    body.style.maxHeight = isOpen ? '0px' : body.scrollHeight + 'px';
+    chev.classList.toggle('open', !isOpen);
+    if (!isOpen) {
+        setTimeout(() => { body.style.maxHeight = body.scrollHeight + 80 + 'px'; }, 380);
+    }
+}
 
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+/* ── Toggle switch (custom checkbox) ──────────────────────────────── */
+function toggleSwitch(el) {
+    el.classList.toggle('active');
+}
+
+/* ── Show/hide gradient options ───────────────────────────────────── */
+function toggleGradient(containerId, show) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    if (show) {
+        el.classList.add('show');
+    } else {
+        el.classList.remove('show');
+    }
+}
+
+/* ── Initialise ───────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+
+    // Sync slider display values on load
+    document.querySelectorAll('.slider-row input[type=range]').forEach(slider => {
+        const valSpan = slider.closest('.slider-row')?.querySelector('.slider-val');
+        if (valSpan && slider.id) {
+            slider.addEventListener('input', () => {
+                let unit = 'px';
+                if (slider.id.includes('angle')) unit = '\u00B0';
+                else if (slider.id === 'qr-logo-size') unit = '%';
+                else if (slider.id === 'qr-logo-opacity') unit = '';
+                valSpan.textContent = slider.value + unit;
+            });
+        }
+    });
+});
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
