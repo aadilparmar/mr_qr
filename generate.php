@@ -50,7 +50,7 @@ require_once __DIR__ . '/includes/header.php';
 .action-btn.primary{background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:0 3px 10px rgba(255,92,53,.28)}
 .action-btn.primary:hover:not(:disabled){background:#f04020;transform:translateY(-1px)}
 .action-btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
-.cust-card{background:var(--bg);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+.cust-card{background:var(--bg);border:1px solid var(--border);border-radius:18px}
 .cust-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;user-select:none}
 .cust-body{overflow:hidden;transition:max-height .35s cubic-bezier(.22,1,.36,1)}
 .cust-body-inner{padding:0 20px 20px;border-top:1px solid var(--border)}
